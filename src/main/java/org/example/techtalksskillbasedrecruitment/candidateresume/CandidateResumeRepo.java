@@ -1,4 +1,8 @@
 package org.example.techtalksskillbasedrecruitment.candidateresume;
 
-public class CandidateResumeRepo {
+import org.example.techtalksskillbasedrecruitment.candidateprofile.CandidateProfile;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CandidateResumeRepo extends JpaRepository<CandidateResume,Integer> {
+    CandidateResume findByCandidate(CandidateProfile candidateProfile);
 }

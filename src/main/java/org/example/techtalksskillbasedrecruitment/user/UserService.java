@@ -85,9 +85,12 @@ public class UserService {
         List<User> userList = userRepository.findAll();
         List<UserResponse> userResponseList = new ArrayList<>();
         for (User user : userList) {
-            userResponseList.add( new UserResponse(user.getUserId(), user.getUsername(), user.getEmail(),
-                    user.getPhoneNumber(), user.getRole().getRoleId(),user.getRole().getRoleName(),user.getCreatedAt()));
+            UserResponse userResponse =  new UserResponse(user.getUserId(), user.getUsername(), user.getEmail(),
+                    user.getPhoneNumber(), user.getRole().getRoleId(),user.getRole().getRoleName(),user.getCreatedAt());
+            userResponseList.add(userResponse);
         }
+
+
         return userResponseList;
     }
 
