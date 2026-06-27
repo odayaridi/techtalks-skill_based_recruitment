@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @CrossOrigin(origins = "*", allowCredentials = "false")
 @RestController
 @RequestMapping("/api/candidate-resume")
@@ -41,5 +43,10 @@ public class CandidateResumeController {
     public ResponseEntity<CandidateResumeResponse> updateCandidateResumeController(@RequestBody UpdateCandidateResumeRequest updateCandidateResumeRequest) {
         CandidateResumeResponse candidateResumeResponse = this.candidateResumeService.updateCandidateResumeService(updateCandidateResumeRequest);
         return new ResponseEntity<CandidateResumeResponse>(candidateResumeResponse, HttpStatus.OK);
+    }
+    @GetMapping("exists/candidateId/{candidateId}")
+    public ResponseEntity<Map<String, Boolean>> existsCandidateResumeByCandidateIdController(@PathVariable Integer candidateId) {
+        Map<String, Boolean> response = this.candidateResumeService.existsCandidateResumeByCandidateIdService(candidateId);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

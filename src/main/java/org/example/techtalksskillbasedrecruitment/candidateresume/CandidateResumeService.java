@@ -10,6 +10,9 @@ import org.example.techtalksskillbasedrecruitment.candidateresume.dto.response.C
 import org.example.techtalksskillbasedrecruitment.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 public class CandidateResumeService {
     private final CandidateResumeRepo candidateResumeRepo;
@@ -58,5 +61,13 @@ public class CandidateResumeService {
                 updatedResume.getCandidate().getCandidateId(),
                 updatedResume.getFilePath()
         );
+    }
+    public Map<String, Boolean> existsCandidateResumeByCandidateIdService(Integer candidateId) {
+        CandidateProfile existingCandidateProfile = this.candidateProfileRepository.findById(candidateId).orElseThrow(() ->
+                new ResourceNotFoundException("Candidate is not found to check whether a resume exists for him"));
+        boolean existingResumeForCandidate = this.candidateResumeRepo.existsByCandidate(existingCandidateProfile);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("resumeExists", existingResumeForCandidate);
+        return response;
     }
 }
