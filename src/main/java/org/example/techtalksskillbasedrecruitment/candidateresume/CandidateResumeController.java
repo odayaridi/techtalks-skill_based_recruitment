@@ -3,6 +3,7 @@ package org.example.techtalksskillbasedrecruitment.candidateresume;
 
 import lombok.Getter;
 import org.example.techtalksskillbasedrecruitment.candidateresume.dto.request.CandidateResumeRequest;
+import org.example.techtalksskillbasedrecruitment.candidateresume.dto.request.UpdateCandidateResumeRequest;
 import org.example.techtalksskillbasedrecruitment.candidateresume.dto.response.CandidateResumeResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,5 +37,9 @@ public class CandidateResumeController {
         CandidateResumeResponse candidateResumeResponse = this.candidateResumeService.getCandidateResumeService(candidateId);
         return new ResponseEntity<CandidateResumeResponse>(candidateResumeResponse,HttpStatus.OK);
     }
-
+    @PutMapping("/update")
+    public ResponseEntity<CandidateResumeResponse> updateCandidateResumeController(@RequestBody UpdateCandidateResumeRequest updateCandidateResumeRequest) {
+        CandidateResumeResponse candidateResumeResponse = this.candidateResumeService.updateCandidateResumeService(updateCandidateResumeRequest);
+        return new ResponseEntity<CandidateResumeResponse>(candidateResumeResponse, HttpStatus.OK);
+    }
 }

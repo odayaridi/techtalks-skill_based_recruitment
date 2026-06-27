@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.example.techtalksskillbasedrecruitment.candidateprofile.CandidateProfile;
 import org.example.techtalksskillbasedrecruitment.candidateprofile.CandidateProfileRepository;
 import org.example.techtalksskillbasedrecruitment.candidateresume.dto.request.CandidateResumeRequest;
+import org.example.techtalksskillbasedrecruitment.candidateresume.dto.request.UpdateCandidateResumeRequest;
 import org.example.techtalksskillbasedrecruitment.candidateresume.dto.response.CandidateResumeResponse;
 import org.example.techtalksskillbasedrecruitment.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -43,5 +44,19 @@ public class CandidateResumeService {
             throw new ResourceNotFoundException("Candidate resume does not exist to retrieve it");
         }
         return new CandidateResumeResponse(candidateResume.getResumeId(),candidateResume.getCandidate().getCandidateId(),candidateResume.getFilePath());
+    }
+    public CandidateResumeResponse updateCandidateResumeService(UpdateCandidateResumeRequest updateRequest) {
+        CandidateResume candidateResume = this.candidateResumeRepo.findById(updateRequest.getResumeId())
+                .orElseThrow(() -> new ResourceNotFoundException("Resume with ID " + updateRequest.getResumeId() + " does not exist to update it"));
+
+        candidateResume.setFilePath(updateRequest.getFilePath());
+
+        CandidateResume updatedResume = this.candidateResumeRepo.save(candidateResume);
+
+        return new CandidateResumeResponse(
+                updatedResume.getResumeId(),
+                updatedResume.getCandidate().getCandidateId(),
+                updatedResume.getFilePath()
+        );
     }
 }

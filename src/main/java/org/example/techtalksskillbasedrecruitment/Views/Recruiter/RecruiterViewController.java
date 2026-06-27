@@ -12,7 +12,7 @@ public class RecruiterViewController {
     private RecruiterViewService RecServ;
 
     @GetMapping("/{id}")
-    public RecruiterView getRecruiterByUserId(@PathVariable Integer id){
-        return RecServ.getRecruiterByUserId(id);
+    public RecruiterView getRecruiterByUserIdController(@PathVariable Integer id){
+        return RecServ.getRecruiterByUserIdService(id);
     }
 }
