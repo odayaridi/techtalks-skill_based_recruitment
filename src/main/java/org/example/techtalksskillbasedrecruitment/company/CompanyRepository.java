@@ -1,4 +1,7 @@
 package org.example.techtalksskillbasedrecruitment.company;
 
-public class CompanyRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CompanyRepository extends JpaRepository<Company,Integer> {
+    Company findByCompanyName(String companyName);
 }
