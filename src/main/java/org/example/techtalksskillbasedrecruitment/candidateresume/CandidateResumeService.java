@@ -5,9 +5,13 @@ import lombok.Setter;
 import org.example.techtalksskillbasedrecruitment.candidateprofile.CandidateProfile;
 import org.example.techtalksskillbasedrecruitment.candidateprofile.CandidateProfileRepository;
 import org.example.techtalksskillbasedrecruitment.candidateresume.dto.request.CandidateResumeRequest;
+import org.example.techtalksskillbasedrecruitment.candidateresume.dto.request.UpdateCandidateResumeRequest;
 import org.example.techtalksskillbasedrecruitment.candidateresume.dto.response.CandidateResumeResponse;
 import org.example.techtalksskillbasedrecruitment.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class CandidateResumeService {
@@ -43,5 +47,27 @@ public class CandidateResumeService {
             throw new ResourceNotFoundException("Candidate resume does not exist to retrieve it");
         }
         return new CandidateResumeResponse(candidateResume.getResumeId(),candidateResume.getCandidate().getCandidateId(),candidateResume.getFilePath());
+    }
+    public CandidateResumeResponse updateCandidateResumeService(UpdateCandidateResumeRequest updateRequest) {
+        CandidateResume candidateResume = this.candidateResumeRepo.findById(updateRequest.getResumeId())
+                .orElseThrow(() -> new ResourceNotFoundException("Resume with ID " + updateRequest.getResumeId() + " does not exist to update it"));
+
+        candidateResume.setFilePath(updateRequest.getFilePath());
+
+        CandidateResume updatedResume = this.candidateResumeRepo.save(candidateResume);
+
+        return new CandidateResumeResponse(
+                updatedResume.getResumeId(),
+                updatedResume.getCandidate().getCandidateId(),
+                updatedResume.getFilePath()
+        );
+    }
+    public Map<String, Boolean> existsCandidateResumeByCandidateIdService(Integer candidateId) {
+        CandidateProfile existingCandidateProfile = this.candidateProfileRepository.findById(candidateId).orElseThrow(() ->
+                new ResourceNotFoundException("Candidate is not found to check whether a resume exists for him"));
+        boolean existingResumeForCandidate = this.candidateResumeRepo.existsByCandidate(existingCandidateProfile);
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("resumeExists", existingResumeForCandidate);
+        return response;
     }
 }
