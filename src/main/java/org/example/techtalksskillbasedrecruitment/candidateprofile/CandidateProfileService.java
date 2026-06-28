@@ -2,6 +2,7 @@ package org.example.techtalksskillbasedrecruitment.candidateprofile;
 
 
 import org.example.techtalksskillbasedrecruitment.candidateprofile.dto.request.CreateCanProfileRequest;
+import org.example.techtalksskillbasedrecruitment.candidateprofile.dto.request.UpdateProfileRequest;
 import org.example.techtalksskillbasedrecruitment.candidateprofile.dto.response.CandidateProfileResponse;
 import org.example.techtalksskillbasedrecruitment.exceptions.ResourceNotFoundException;
 import org.example.techtalksskillbasedrecruitment.user.User;
@@ -56,5 +57,20 @@ public class CandidateProfileService {
                 ,candidateProfile.getLocation(),candidateProfile.getGithubUrl(),candidateProfile.getLinkedinUrl());
     }
 
-
+   public  CandidateProfileResponse  updateCandidateProfileService(UpdateProfileRequest  updateProfileRequest){
+        CandidateProfile candidateProfile=this.candidateProfileRepository.findById(updateProfileRequest.getCandidateId()).
+                 orElseThrow(()->new ResourceNotFoundException("candidate profile is not exist to update it "));
+       candidateProfile.setBio(updateProfileRequest.getBio());
+       candidateProfile.setLocation(updateProfileRequest.getLocation());
+       candidateProfile.setGithubUrl(updateProfileRequest.getGithubUrl());
+       candidateProfile.setLinkedinUrl(updateProfileRequest.getLinkedinUrl());
+       CandidateProfile updatedCandidateProfile = this.candidateProfileRepository.save(candidateProfile);
+       return  new CandidateProfileResponse(
+               updatedCandidateProfile.getCandidateId(),
+               updatedCandidateProfile.getUser().getUserId(),
+               updatedCandidateProfile.getBio(),
+               updatedCandidateProfile.getLocation(),
+               updatedCandidateProfile.getGithubUrl(),
+               updatedCandidateProfile.getLinkedinUrl());
+   }
 }

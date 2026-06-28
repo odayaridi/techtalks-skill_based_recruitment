@@ -1,5 +1,8 @@
 package org.example.techtalksskillbasedrecruitment.certification;
 
+import java.util.ArrayList;
+
+import jakarta.transaction.Transactional;
 import org.example.techtalksskillbasedrecruitment.candidateprofile.CandidateProfile;
 import org.example.techtalksskillbasedrecruitment.candidateprofile.CandidateProfileRepository;
 import org.example.techtalksskillbasedrecruitment.certification.dto.request.CreateCertificationRequest;
@@ -7,6 +10,8 @@ import org.example.techtalksskillbasedrecruitment.certification.dto.response.Cer
 import org.example.techtalksskillbasedrecruitment.exceptions.ConflictException;
 import org.example.techtalksskillbasedrecruitment.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CertificationService {
@@ -34,5 +39,25 @@ public class CertificationService {
         Certification newCertification = this.certificationRepository.save(certification);
         return new CertificationResponse(newCertification.getCertificateId(),newCertification.getCandidate().getCandidateId(),certification.getCertificateName(),newCertification.getIssuedBy(),newCertification.getCertificateFile());
     }
+    public List<CertificationResponse> getCertificationsByCandidateIdService(Integer candidateId) {
+        List<Certification> certifications=this.certificationRepository.findByCandidate_CandidateId(candidateId);
+        List <CertificationResponse> certificationResponses=new ArrayList<>();
+        for(Certification certification:certifications){
+            CertificationResponse certificationResponse=new CertificationResponse(
+                       certification.getCertificateId(),
+                      certification.getCandidate().getCandidateId(),
+                        certification.getCertificateName(),
+                        certification.getIssuedBy(),
+            certification.getCertificateFile());
+            certificationResponses.add(certificationResponse);
+        }
+      return  certificationResponses;
+    }
+      @Transactional
+       public  void deleteCertificationByIdService(Integer certificateid){
+        Certification certification=this.certificationRepository.findById(certificateid).
+                orElseThrow(()->new ResourceNotFoundException("Certification  is not found"));
+        this.certificationRepository.delete(certification);
+   }
 
 }

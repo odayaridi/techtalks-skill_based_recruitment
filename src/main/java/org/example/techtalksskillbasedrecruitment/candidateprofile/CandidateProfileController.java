@@ -1,6 +1,7 @@
 package org.example.techtalksskillbasedrecruitment.candidateprofile;
 
 import org.example.techtalksskillbasedrecruitment.candidateprofile.dto.request.CreateCanProfileRequest;
+import org.example.techtalksskillbasedrecruitment.candidateprofile.dto.request.UpdateProfileRequest;
 import org.example.techtalksskillbasedrecruitment.candidateprofile.dto.response.CandidateProfileResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,11 @@ public class CandidateProfileController {
         CandidateProfileResponse candidateProfileResponse = this.candidateProfileService.getCandidateProfileService(userId);
         return new ResponseEntity<>(candidateProfileResponse,HttpStatus.OK);
     }
+    @PutMapping("/update-profile")
+    public  ResponseEntity<CandidateProfileResponse> updateCandidateProfileController(@RequestBody UpdateProfileRequest updateProfileRequest){
+        CandidateProfileResponse candidateProfileResponse =
+                this.candidateProfileService.updateCandidateProfileService(updateProfileRequest);
 
-
+        return new ResponseEntity<>(candidateProfileResponse, HttpStatus.OK);
+    }
 }
