@@ -1,5 +1,6 @@
 package org.example.techtalksskillbasedrecruitment.companyrecruiter;
 
+import jakarta.transaction.Transactional;
 import org.example.techtalksskillbasedrecruitment.company.Company;
 import org.example.techtalksskillbasedrecruitment.company.CompanyRepository;
 import org.example.techtalksskillbasedrecruitment.companyrecruiter.dto.request.CreateCompanyRecruiterRequest;
@@ -42,5 +43,13 @@ public class CompanyRecruiterService {
 
     public List<CompanyRecruiterDTO> getCompanyRecruitersService(){
         return this.companyRecruiterRepository.getCompanyRecruitersRepository();
+    }
+
+    @Transactional
+    public void deleteCompanyRecruiterService(Integer crId) {
+        CompanyRecruiter companyRecruiter = this.companyRecruiterRepository.findById(crId)
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid Company Recruiter Id to delete"));
+
+        this.companyRecruiterRepository.delete(companyRecruiter);
     }
 }

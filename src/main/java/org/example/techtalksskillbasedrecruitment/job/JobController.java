@@ -3,6 +3,7 @@ package org.example.techtalksskillbasedrecruitment.job;
 import org.example.techtalksskillbasedrecruitment.job.dto.request.CreateJobRequest;
 import org.example.techtalksskillbasedrecruitment.job.dto.request.UpdateJobRequest;
 import org.example.techtalksskillbasedrecruitment.job.dto.response.JobResponse;
+import org.springframework.boot.autoconfigure.batch.BatchProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +44,11 @@ public class JobController {
     ) {
         JobResponse updatedJob = this.jobService.updateJobDetailsService(jobId,jobRequest);
         return new ResponseEntity<>(updatedJob, HttpStatus.OK);
+    }
+    @DeleteMapping("/delete/jobId/{jobId}")
+    public  ResponseEntity<Void> deleteJobController(@PathVariable Integer jobId){
+        this.jobService.deleteJobService(jobId);
+        return  ResponseEntity.noContent().build();
     }
 
 }

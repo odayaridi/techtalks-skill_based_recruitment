@@ -34,4 +34,10 @@ public class CompanyRecruiterController {
                 companyRecruiterService.getCompanyRecruitersService();
         return new ResponseEntity<>(companyRecruiters, HttpStatus.OK);
     }
+    @DeleteMapping("/delete/crId/{crId}")
+    public ResponseEntity<Void> deleteCompanyRecruiterController(@PathVariable Integer crId) {
+        this.companyRecruiterService.deleteCompanyRecruiterService(crId);
+
+        return ResponseEntity.noContent().build();
+    }
 }

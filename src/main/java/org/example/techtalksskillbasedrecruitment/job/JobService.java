@@ -1,5 +1,6 @@
 package org.example.techtalksskillbasedrecruitment.job;
 
+import jakarta.transaction.Transactional;
 import org.example.techtalksskillbasedrecruitment.company.Company;
 import org.example.techtalksskillbasedrecruitment.company.CompanyRepository;
 import org.example.techtalksskillbasedrecruitment.exceptions.ResourceNotFoundException;
@@ -90,5 +91,10 @@ public class JobService {
             jobsResponses.add(jobsResponse);
         }
         return jobsResponses;
+    }
+    @Transactional
+    public  void  deleteJobService(Integer jobId){
+        Job job=this.jobRepository.findById(jobId).orElseThrow(()->new ResourceNotFoundException("Job does not exist to delete it. Invalid job id."));
+        this.jobRepository.deleteById(jobId);
     }
 }
