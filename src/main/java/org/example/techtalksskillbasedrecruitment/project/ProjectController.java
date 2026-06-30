@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/project")
 public class ProjectController {
@@ -19,5 +21,10 @@ public class ProjectController {
     public ResponseEntity<ProjectResponse> createProjectController(@RequestBody ProjectRequest projectRequest) {
         ProjectResponse projectResponse = this.projectService.createProjectService(projectRequest);
         return new ResponseEntity<>(projectResponse, HttpStatus.CREATED);
+    }
+    @GetMapping("/getAll")
+    public ResponseEntity<List<ProjectResponse>> getAllProjectsController() {
+        List<ProjectResponse> projectResponses = this.projectService.getAllProjectsService();
+        return new ResponseEntity<>(projectResponses, HttpStatus.OK);
     }
 }

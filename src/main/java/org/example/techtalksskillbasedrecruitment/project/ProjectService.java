@@ -7,6 +7,9 @@ import org.example.techtalksskillbasedrecruitment.project.dto.request.ProjectReq
 import org.example.techtalksskillbasedrecruitment.project.dto.response.ProjectResponse;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class ProjectService {
     private final ProjectRepository projectRepository;
@@ -43,5 +46,27 @@ public class ProjectService {
                 savedProject.getDemoUrl(),
                 savedProject.getCreatedAt()
         );
+
     }
-}
+    public List<ProjectResponse> getAllProjectsService() {
+        List<Project> projects = this.projectRepository.findAll();
+        List<ProjectResponse> projectResponses = new ArrayList<>();
+
+        for (Project project : projects) {
+            ProjectResponse projectResponse = new ProjectResponse(
+                    project.getProjectId(),
+                    project.getCandidate().getCandidateId(),
+                    project.getProjectName(),
+                    project.getDescription(),
+                    project.getStartDate(),
+                    project.getEndDate(),
+                    project.getGithubUrl(),
+                    project.getDemoUrl(),
+                    project.getCreatedAt()
+            );
+            projectResponses.add(projectResponse);
+        }
+
+        return projectResponses;
+        }
+    }
