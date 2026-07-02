@@ -2,6 +2,8 @@ package org.example.techtalksskillbasedrecruitment.project;
 
 import org.example.techtalksskillbasedrecruitment.candidateprofile.CandidateProfile;
 import org.example.techtalksskillbasedrecruitment.candidateprofile.CandidateProfileRepository;
+import org.example.techtalksskillbasedrecruitment.candidateresume.dto.request.UpdateProjectRequest;
+import org.example.techtalksskillbasedrecruitment.exceptions.ConflictException;
 import org.example.techtalksskillbasedrecruitment.exceptions.ResourceNotFoundException;
 import org.example.techtalksskillbasedrecruitment.project.dto.request.ProjectRequest;
 import org.example.techtalksskillbasedrecruitment.project.dto.response.ProjectResponse;
@@ -69,4 +71,39 @@ public class ProjectService {
 
         return projectResponses;
         }
+    public ProjectResponse updateProjectService(Integer projectId, UpdateProjectRequest updateRequest) {
+        Project project = this.projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Project with id " + projectId + " does not exist to update it"));
+
+        if (updateRequest.getGithubUrl() != null &&
+                this.projectRepository.existsByGithubUrlAndProjectIdNot(updateRequest.getGithubUrl(), projectId)) {
+            throw new ConflictException("GitHub URL " + updateRequest.getGithubUrl() + " already exists for another project");
+        }
+
+        if (updateRequest.getDemoUrl() != null &&
+                this.projectRepository.existsByDemoUrlAndProjectIdNot(updateRequest.getDemoUrl(), projectId)) {
+            throw new ConflictException("Demo URL " + updateRequest.getDemoUrl() + " already exists for another project");
+        }
+
+        project.setProjectName(updateRequest.getProjectName());
+        project.setDescription(updateRequest.getDescription());
+        project.setStartDate(updateRequest.getStartDate());
+        project.setEndDate(updateRequest.getEndDate());
+        project.setGithubUrl(updateRequest.getGithubUrl());
+        project.setDemoUrl(updateRequest.getDemoUrl());
+
+        Project updatedProject = this.projectRepository.save(project);
+
+        return new ProjectResponse(
+                updatedProject.getProjectId(),
+                updatedProject.getCandidate().getCandidateId(),
+                updatedProject.getProjectName(),
+                updatedProject.getDescription(),
+                updatedProject.getStartDate(),
+                updatedProject.getEndDate(),
+                updatedProject.getGithubUrl(),
+                updatedProject.getDemoUrl(),
+                updatedProject.getCreatedAt()
+        );
+    }
     }
