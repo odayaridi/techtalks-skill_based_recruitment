@@ -1,5 +1,6 @@
 package org.example.techtalksskillbasedrecruitment.project;
 
+import jakarta.transaction.Transactional;
 import org.example.techtalksskillbasedrecruitment.candidateprofile.CandidateProfile;
 import org.example.techtalksskillbasedrecruitment.candidateprofile.CandidateProfileRepository;
 import org.example.techtalksskillbasedrecruitment.candidateresume.dto.request.UpdateProjectRequest;
@@ -105,5 +106,12 @@ public class ProjectService {
                 updatedProject.getDemoUrl(),
                 updatedProject.getCreatedAt()
         );
+      }
+
+    @Transactional
+    public void deleteProjectService(Integer projectId) {
+        Project project = this.projectRepository.findById(projectId)
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid project id. Failed to delete uploaded project"));
+        this.projectRepository.delete(project);
     }
-    }
+}
