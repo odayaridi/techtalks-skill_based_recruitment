@@ -1,4 +1,6 @@
 package org.example.techtalksskillbasedrecruitment.candidateskill;
 
-public class CandidateSkillRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface CandidateSkillRepository extends JpaRepository<CandidateSkill, Integer> {
 }
