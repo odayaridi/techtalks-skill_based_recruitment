@@ -9,6 +9,9 @@ import org.example.techtalksskillbasedrecruitment.skill.Skill;
 import org.example.techtalksskillbasedrecruitment.skill.SkillRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class CandidateSkillService {
     private final CandidateSkillRepository candidateSkillRepository;
@@ -45,5 +48,25 @@ public class CandidateSkillService {
                 savedCandidateSkill.getLevel(),
                 savedCandidateSkill.getYearsOfExperience()
         );
+    }
+    public List<CandidateSkillResponse> getCandidateSkillsService(Integer candidateId) {
+        CandidateProfile candidateProfile = this.candidateProfileRepository.findById(candidateId)
+                .orElseThrow(() -> new ResourceNotFoundException("Candidate with id " + candidateId + " does not exist"));
+
+        List<CandidateSkill> candidateSkills = this.candidateSkillRepository.findByCandidate(candidateProfile);
+        List<CandidateSkillResponse> candidateSkillResponses = new ArrayList<>();
+
+        for (CandidateSkill candidateSkill : candidateSkills) {
+            CandidateSkillResponse response = new CandidateSkillResponse(
+                    candidateSkill.getCandidateSkillId(),
+                    candidateSkill.getCandidate().getCandidateId(),
+                    candidateSkill.getSkill().getSkillName(),
+                    candidateSkill.getLevel(),
+                    candidateSkill.getYearsOfExperience()
+            );
+            candidateSkillResponses.add(response);
+        }
+
+        return candidateSkillResponses;
     }
 }

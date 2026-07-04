@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/candidate-skill")
 public class CandidateSkillController {
@@ -19,5 +21,10 @@ public class CandidateSkillController {
     public ResponseEntity<CandidateSkillResponse> createCandidateSkillController(@RequestBody CreateCandidateSkillRequest createCandidateSkillRequest) {
         CandidateSkillResponse candidateSkillResponse = this.candidateSkillService.createCandidateSkillService(createCandidateSkillRequest);
         return new ResponseEntity<>(candidateSkillResponse, HttpStatus.CREATED);
+    }
+    @GetMapping("/getAll/candidateId/{candidateId}")
+    public ResponseEntity<List<CandidateSkillResponse>> getCandidateSkillsController(@PathVariable Integer candidateId) {
+        List<CandidateSkillResponse> candidateSkillResponses = this.candidateSkillService.getCandidateSkillsService(candidateId);
+        return new ResponseEntity<>(candidateSkillResponses, HttpStatus.OK);
     }
 }
