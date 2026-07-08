@@ -2,7 +2,9 @@ package org.example.techtalksskillbasedrecruitment.user;
 
 import lombok.Getter;
 import org.example.techtalksskillbasedrecruitment.user.dto.request.CreateUserRequest;
+import org.example.techtalksskillbasedrecruitment.user.dto.request.LoginRequest;
 import org.example.techtalksskillbasedrecruitment.user.dto.request.UpdateUserRequest;
+import org.example.techtalksskillbasedrecruitment.user.dto.response.LoginResponse;
 import org.example.techtalksskillbasedrecruitment.user.dto.response.UserResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,12 @@ public class UserController {
         return new ResponseEntity<UserResponse>(newUser, HttpStatus.CREATED);
     }
 
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> loginUserController(@RequestBody LoginRequest loginRequest) {
+        LoginResponse loginResponse = userService.loginUserService(loginRequest);
+        return ResponseEntity.ok(loginResponse);
+    }
     @PutMapping("/update")
     public ResponseEntity<UserResponse> updateUserController(
             @RequestBody UpdateUserRequest userRequest) {

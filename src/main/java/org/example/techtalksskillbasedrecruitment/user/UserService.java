@@ -4,9 +4,13 @@ import org.example.techtalksskillbasedrecruitment.exceptions.ConflictException;
 import org.example.techtalksskillbasedrecruitment.exceptions.ResourceNotFoundException;
 import org.example.techtalksskillbasedrecruitment.role.Role;
 import org.example.techtalksskillbasedrecruitment.role.RoleRepository;
+import org.example.techtalksskillbasedrecruitment.security.JwtService;
 import org.example.techtalksskillbasedrecruitment.user.dto.request.CreateUserRequest;
+import org.example.techtalksskillbasedrecruitment.user.dto.request.LoginRequest;
 import org.example.techtalksskillbasedrecruitment.user.dto.request.UpdateUserRequest;
+import org.example.techtalksskillbasedrecruitment.user.dto.response.LoginResponse;
 import org.example.techtalksskillbasedrecruitment.user.dto.response.UserResponse;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -16,9 +20,14 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
+    public UserService(UserRepository userRepository, RoleRepository roleRepository
+    , PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.jwtService=jwtService;
+        this.passwordEncoder=passwordEncoder;
     }
 
 
@@ -44,11 +53,36 @@ public class UserService {
         user.setPhoneNumber(userRequest.getPhoneNumber());
         user.setRole(role);
         user.setEmail(userRequest.getEmail());
-        user.setPassword(userRequest.getPassword());
+        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
 
         User savedUser = userRepository.save(user);
         return new UserResponse(savedUser.getUserId(), savedUser.getUsername(), savedUser.getEmail(),
                 savedUser.getPhoneNumber(), savedUser.getRole().getRoleId(),savedUser.getRole().getRoleName(),savedUser.getCreatedAt());
+    }
+
+    public LoginResponse loginUserService(LoginRequest loginRequest) {
+
+        User user = userRepository.findByEmail(loginRequest.getEmail())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Invalid email or password"));
+
+        if (!passwordEncoder.matches(
+                loginRequest.getPassword(),
+                user.getPassword())) {
+
+            throw new ResourceNotFoundException("Invalid email or password");
+        }
+
+        String token = jwtService.generateToken(user);
+
+        return new LoginResponse(
+                token,
+                user.getUserId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getRole().getRoleId(),
+                user.getRole().getRoleName()
+        );
     }
 
     public UserResponse updateUserService(UpdateUserRequest userRequest) {
