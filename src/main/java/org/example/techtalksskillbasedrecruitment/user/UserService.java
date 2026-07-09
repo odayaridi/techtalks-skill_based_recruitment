@@ -10,6 +10,7 @@ import org.example.techtalksskillbasedrecruitment.user.dto.request.LoginRequest;
 import org.example.techtalksskillbasedrecruitment.user.dto.request.UpdateUserRequest;
 import org.example.techtalksskillbasedrecruitment.user.dto.response.LoginResponse;
 import org.example.techtalksskillbasedrecruitment.user.dto.response.UserResponse;
+import org.example.techtalksskillbasedrecruitment.user.mapper.Usermapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,12 +23,15 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final Usermapper usermapper;
     public UserService(UserRepository userRepository, RoleRepository roleRepository
-    , PasswordEncoder passwordEncoder, JwtService jwtService) {
+    , PasswordEncoder passwordEncoder, JwtService jwtService,
+                       Usermapper usermapper) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.jwtService=jwtService;
         this.passwordEncoder=passwordEncoder;
+        this.usermapper=usermapper;
     }
 
 
@@ -56,8 +60,7 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
 
         User savedUser = userRepository.save(user);
-        return new UserResponse(savedUser.getUserId(), savedUser.getUsername(), savedUser.getEmail(),
-                savedUser.getPhoneNumber(), savedUser.getRole().getRoleId(),savedUser.getRole().getRoleName(),savedUser.getCreatedAt());
+        return usermapper.toUserResponseDTO(savedUser);
     }
 
     public LoginResponse loginUserService(LoginRequest loginRequest) {
@@ -86,15 +89,15 @@ public class UserService {
     }
 
     public UserResponse updateUserService(UpdateUserRequest userRequest) {
-        if (userRepository.existsByEmailAndUserIdNot(userRequest.getEmail(), userRequest.getUserId())){
+        if (userRepository.existsByEmailAndUserIdNot(userRequest.getEmail(), userRequest.getUserId())) {
             throw new ConflictException("User already exists with this email");
         }
 
-        if(userRepository.existsByUsernameAndUserIdNot(userRequest.getUsername(), userRequest.getUserId())){
+        if (userRepository.existsByUsernameAndUserIdNot(userRequest.getUsername(), userRequest.getUserId())) {
             throw new ConflictException("User already exists with this username");
         }
 
-        if(userRepository.existsByPhoneNumberAndUserIdNot(userRequest.getPhoneNumber(), userRequest.getUserId())) {
+        if (userRepository.existsByPhoneNumberAndUserIdNot(userRequest.getPhoneNumber(), userRequest.getUserId())) {
             throw new ConflictException("User already exists with this phone number");
         }
 
@@ -111,17 +114,14 @@ public class UserService {
         existingUser.setRole(role);
 
         User updatedUser = userRepository.save(existingUser);
-        return new UserResponse(updatedUser.getUserId(), updatedUser.getUsername(), updatedUser.getEmail(),
-                updatedUser.getPhoneNumber(), updatedUser.getRole().getRoleId(),updatedUser.getRole().getRoleName(),updatedUser.getCreatedAt());
+        return usermapper.toUserResponseDTO(updatedUser);
     }
 
     public List<UserResponse> getAllUsersService() {
         List<User> userList = userRepository.findAll();
         List<UserResponse> userResponseList = new ArrayList<>();
         for (User user : userList) {
-            UserResponse userResponse =  new UserResponse(user.getUserId(), user.getUsername(), user.getEmail(),
-                    user.getPhoneNumber(), user.getRole().getRoleId(),user.getRole().getRoleName(),user.getCreatedAt());
-            userResponseList.add(userResponse);
+            userResponseList.add(usermapper.toUserResponseDTO(user));
         }
 
 

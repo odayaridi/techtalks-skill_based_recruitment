@@ -6,6 +6,7 @@ import org.example.techtalksskillbasedrecruitment.exceptions.ResourceNotFoundExc
 import org.example.techtalksskillbasedrecruitment.job.dto.request.CreateJobRequest;
 import org.example.techtalksskillbasedrecruitment.job.dto.request.UpdateJobRequest;
 import org.example.techtalksskillbasedrecruitment.job.dto.response.JobResponse;
+import org.example.techtalksskillbasedrecruitment.job.mapper.JobMapper;
 import org.example.techtalksskillbasedrecruitment.user.User;
 import org.example.techtalksskillbasedrecruitment.user.UserRepository;
 import org.springframework.stereotype.Service;
@@ -18,11 +19,16 @@ public class JobService {
     private final JobRepository jobRepository;
     private final CompanyRepository companyRepository;
     private final UserRepository userRepository;
+    private final JobMapper jobMapper;
 
-    public JobService(JobRepository jobRepository, CompanyRepository companyRepository, UserRepository userRepository) {
+    public JobService(JobRepository jobRepository,
+                      CompanyRepository companyRepository,
+                      UserRepository userRepository,
+                    JobMapper jobMapper) {
         this.jobRepository = jobRepository;
         this.companyRepository = companyRepository;
         this.userRepository = userRepository;
+        this.jobMapper=jobMapper;
     }
 
 
@@ -42,9 +48,7 @@ public class JobService {
         job.setStatus(jobRequest.getStatus());
 
         Job newJob = this.jobRepository.save(job);
-        return new JobResponse(newJob.getJobId(),newJob.getCompany().getCompanyName(),
-                newJob.getCreatedBy().getUserId(), newJob.getTitle(), newJob.getDescription(),
-                newJob.getJobType(), newJob.getLocation(), newJob.getStatus());
+        return jobMapper.toJobResponseDTO(job);
     }
 
     public List<JobResponse> getJobsByCompanyNameService(String companyName) {
@@ -67,9 +71,7 @@ public class JobService {
         existingJob.setLocation(jobRequest.getLocation());
         existingJob.setDescription(jobRequest.getDescription());
         Job updatedJob = this.jobRepository.save(existingJob);
-        return new JobResponse(updatedJob.getJobId(),updatedJob.getCompany().getCompanyName(),
-                updatedJob.getCreatedBy().getUserId(), updatedJob.getTitle(), updatedJob.getDescription(),
-                updatedJob.getJobType(), updatedJob.getLocation(), updatedJob.getStatus());
+        return jobMapper.toJobResponseDTO(updatedJob);
     }
 
     private static List<JobResponse> getJobResponses(List<Job> jobsPostedByCompany) {
