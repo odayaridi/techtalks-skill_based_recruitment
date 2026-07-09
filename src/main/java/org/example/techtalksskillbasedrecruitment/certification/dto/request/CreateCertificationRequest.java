@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 public class CreateCertificationRequest {
@@ -24,4 +26,7 @@ public class CreateCertificationRequest {
     @NotBlank(message = "Certificate file is required")
     private String certificateFile;
 
+
+    @NotNull(message = "Certificate date is required")
+    private LocalDate certificateDate;
 }

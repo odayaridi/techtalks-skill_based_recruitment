@@ -21,7 +21,6 @@ public class CandidateResumeController {
         this.candidateResumeService = candidateResumeService;
     }
 
-
     @PostMapping("/create")
     public ResponseEntity<CandidateResumeResponse> createCandidateResumeController(@RequestBody CandidateResumeRequest candidateResumeRequest) {
         CandidateResumeResponse candidateResumeResponse = this.candidateResumeService.createCandidateResumeService(candidateResumeRequest);

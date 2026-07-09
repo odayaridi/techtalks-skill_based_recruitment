@@ -1,7 +1,9 @@
 package org.example.techtalksskillbasedrecruitment.companyrecruiter;
 
 
+import org.example.techtalksskillbasedrecruitment.company.Company;
 import org.example.techtalksskillbasedrecruitment.companyrecruiter.dto.response.CompanyRecruiterDTO;
+import org.example.techtalksskillbasedrecruitment.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -20,4 +22,6 @@ public interface CompanyRecruiterRepository extends JpaRepository<CompanyRecruit
         JOIN Company c ON c.companyId = cr.company.companyId
         """)
     List<CompanyRecruiterDTO> getCompanyRecruitersRepository();
+
+
 }

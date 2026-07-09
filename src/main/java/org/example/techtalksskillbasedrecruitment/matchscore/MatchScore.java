@@ -36,7 +36,7 @@ public class MatchScore {
     private BigDecimal matchPercentage;
 
     @Column(name = "calculated_at", insertable = false, updatable = false)
-    private LocalDateTime calculatedAt;
+    private LocalDateTime calculatedAt = LocalDateTime.now();;
 
     public MatchScore() {}
 

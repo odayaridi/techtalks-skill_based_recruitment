@@ -22,7 +22,7 @@ public class CandidateResume {
     private String filePath;
 
     @Column(name = "uploaded_at", insertable = false, updatable = false)
-    private LocalDateTime uploadedAt;
+    private LocalDateTime uploadedAt = LocalDateTime.now();;
 
     public CandidateResume() {}
 

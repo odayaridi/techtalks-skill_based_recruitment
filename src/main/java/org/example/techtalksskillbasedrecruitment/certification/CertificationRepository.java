@@ -9,7 +9,6 @@ import java.util.List;
 public interface CertificationRepository extends JpaRepository<Certification,Integer> {
     boolean existsByCertificateFile(String certificateFile);
 
-
     List<Certification> findByCandidate_CandidateId(Integer candidateId);
 
 }

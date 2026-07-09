@@ -38,7 +38,7 @@ public class Project {
     private String demoUrl;
 
     @Column(name = "created_at", insertable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();;
 
     public Project() {}
 

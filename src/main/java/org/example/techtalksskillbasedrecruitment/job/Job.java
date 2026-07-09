@@ -39,7 +39,7 @@ public class Job {
     private String status;
 
     @Column(name = "created_at", insertable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();;
 
     public Job() {}
 

@@ -3,6 +3,7 @@ package org.example.techtalksskillbasedrecruitment.job;
 import org.example.techtalksskillbasedrecruitment.job.dto.request.CreateJobRequest;
 import org.example.techtalksskillbasedrecruitment.job.dto.request.UpdateJobRequest;
 import org.example.techtalksskillbasedrecruitment.job.dto.response.JobResponse;
+import org.example.techtalksskillbasedrecruitment.matchscore.dto.response.MatchScoreResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,4 +46,24 @@ public class JobController {
         return new ResponseEntity<>(updatedJob, HttpStatus.OK);
     }
 
+    @DeleteMapping("/delete/jobId/{jobId}")
+    public ResponseEntity<Void> deleteJobController(@PathVariable Integer jobId){
+        this.jobService.deleteJobService(jobId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/fetchRecruiterJobs")
+    public ResponseEntity<List<JobResponse>> getPostedJobsByRecruiterController(
+            @RequestParam Integer recruiterId) {
+
+        List<JobResponse> jobs = this.jobService.getPostedJobsByRecruiterService(recruiterId);
+        return ResponseEntity.ok(jobs);
+    }
+
+
+    @PostMapping("/calculateMatchScore")
+    public ResponseEntity<List<MatchScoreResponse>> calculateMatchScoresController(@RequestParam Integer jobId){
+        List<MatchScoreResponse> matchScoreResponseList = this.jobService.calculateMatchScoresService(jobId);
+        return new ResponseEntity<>(matchScoreResponseList,HttpStatus.CREATED);
+    }
 }

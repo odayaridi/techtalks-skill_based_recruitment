@@ -110,6 +110,24 @@
             <version>1.18.38</version>
         </dependency>
 
+
+
+
+
+            <!-- For REST API calls to Groq -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-webflux</artifactId>
+            </dependency>
+
+            <!-- For JSON parsing -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+            </dependency>
+
+
+
     </dependencies>
 
     <build>

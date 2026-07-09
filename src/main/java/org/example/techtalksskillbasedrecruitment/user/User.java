@@ -30,8 +30,8 @@ public class User {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     public User() {
     }

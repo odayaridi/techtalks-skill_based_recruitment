@@ -1,7 +1,4 @@
 package org.example.techtalksskillbasedrecruitment.jobskill;
-
-import org.example.techtalksskillbasedrecruitment.job.Job;
-import org.example.techtalksskillbasedrecruitment.job.JobService;
 import org.example.techtalksskillbasedrecruitment.jobskill.dto.request.CreateJobSkill;
 import org.example.techtalksskillbasedrecruitment.jobskill.dto.response.JobSkillResponse;
 import org.springframework.http.HttpStatus;
@@ -9,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+/*delete */
 @CrossOrigin(origins = "*", allowCredentials = "false")
 @RestController
 @RequestMapping("/api/job-skill")
@@ -28,5 +25,11 @@ public class JobSkillController {
                 this.jobSkillService.createJobSkillsService(jobSkillsList);
 
         return new ResponseEntity<>(jobSkills, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteJobSkillController(@RequestParam Integer jobId, @RequestParam String skillName) {
+        this.jobSkillService.deleteJobSkillService(jobId,skillName);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,6 +1,6 @@
 package org.example.techtalksskillbasedrecruitment.companyrecruiter;
 
-import org.example.techtalksskillbasedrecruitment.companyrecruiter.dto.request.CreateCompanyRecruiterRequest;
+import org.example.techtalksskillbasedrecruitment.companyrecruiter.dto.request.CompanyRecruiterRequest;
 import org.example.techtalksskillbasedrecruitment.companyrecruiter.dto.response.CompanyRecruiterDTO;
 import org.example.techtalksskillbasedrecruitment.companyrecruiter.dto.response.CreateCompanyRecruiterResponse;
 import org.springframework.http.HttpStatus;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 /*
-Update and delete
+ delete
  */
 @CrossOrigin(origins = "*", allowCredentials = "false")
 @RestController
@@ -23,7 +23,7 @@ public class CompanyRecruiterController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<CreateCompanyRecruiterResponse> createCompanyRecruiterResponse(@RequestBody CreateCompanyRecruiterRequest companyRecruiter){
+    public ResponseEntity<CreateCompanyRecruiterResponse> createCompanyRecruiterResponse(@RequestBody CompanyRecruiterRequest companyRecruiter){
         CreateCompanyRecruiterResponse createCompanyRecruiterResponse = this.companyRecruiterService.createCompanyRecruiterService(companyRecruiter);
         return new ResponseEntity<CreateCompanyRecruiterResponse>(createCompanyRecruiterResponse, HttpStatus.CREATED);
     }
@@ -33,5 +33,11 @@ public class CompanyRecruiterController {
         List<CompanyRecruiterDTO> companyRecruiters =
                 companyRecruiterService.getCompanyRecruitersService();
         return new ResponseEntity<>(companyRecruiters, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete/crId/{crId}")
+    public ResponseEntity<Void> deleteCompanyRecruiterController(@PathVariable Integer crId){
+        this.companyRecruiterService.deleteCompanyRecruiterService(crId);
+        return ResponseEntity.noContent().build();
     }
 }

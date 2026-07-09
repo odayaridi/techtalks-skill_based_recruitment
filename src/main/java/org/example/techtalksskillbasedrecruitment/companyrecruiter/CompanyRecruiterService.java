@@ -2,7 +2,7 @@ package org.example.techtalksskillbasedrecruitment.companyrecruiter;
 
 import org.example.techtalksskillbasedrecruitment.company.Company;
 import org.example.techtalksskillbasedrecruitment.company.CompanyRepository;
-import org.example.techtalksskillbasedrecruitment.companyrecruiter.dto.request.CreateCompanyRecruiterRequest;
+import org.example.techtalksskillbasedrecruitment.companyrecruiter.dto.request.CompanyRecruiterRequest;
 import org.example.techtalksskillbasedrecruitment.companyrecruiter.dto.response.CompanyRecruiterDTO;
 import org.example.techtalksskillbasedrecruitment.companyrecruiter.dto.response.CreateCompanyRecruiterResponse;
 import org.example.techtalksskillbasedrecruitment.exceptions.ResourceNotFoundException;
@@ -23,7 +23,7 @@ public class CompanyRecruiterService {
         this.userRepository = userRepository;
     }
 
-    public CreateCompanyRecruiterResponse createCompanyRecruiterService(CreateCompanyRecruiterRequest companyRecruiterReq) {
+    public CreateCompanyRecruiterResponse createCompanyRecruiterService(CompanyRecruiterRequest companyRecruiterReq) {
         Company company = this.companyRepository.findByCompanyName(companyRecruiterReq.getCompanyName());
         if(company == null) {
             throw new ResourceNotFoundException("Company does not exist to assign a recruiter to it");
@@ -42,5 +42,10 @@ public class CompanyRecruiterService {
 
     public List<CompanyRecruiterDTO> getCompanyRecruitersService(){
         return this.companyRecruiterRepository.getCompanyRecruitersRepository();
+    }
+
+    public void deleteCompanyRecruiterService(Integer cId) {
+        CompanyRecruiter companyRecruiter = this.companyRecruiterRepository.findById(cId).orElseThrow(() -> new ResourceNotFoundException("Invalid Company Recruiter Id to delete"));
+        this.companyRecruiterRepository.delete(companyRecruiter);
     }
 }

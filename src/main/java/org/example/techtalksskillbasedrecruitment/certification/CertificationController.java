@@ -25,17 +25,20 @@ public class CertificationController {
         CertificationResponse certificationResponse = this.certificationService.createCertificationService(certificationRequest);
         return new ResponseEntity<CertificationResponse>(certificationResponse, HttpStatus.CREATED);
     }
-    @GetMapping("/getAllByCId/{candidateId}")
 
+    @GetMapping("/getAllByCId/{candidateId}")
     public ResponseEntity<List<CertificationResponse>> getCertificationsByCandidateIdController(@PathVariable Integer candidateId) {
         List<CertificationResponse> certificationResponses =
                  this.certificationService.getCertificationsByCandidateIdService(candidateId);
-        return  new ResponseEntity<>(certificationResponses,HttpStatus.OK);
+        return new ResponseEntity<>(certificationResponses,HttpStatus.OK);
     }
+
     @DeleteMapping("/delete/{certificateId}")
-    public ResponseEntity<Void> deleteCertificationByIdController(@PathVariable Integer certificateId) {
-        this.certificationService.deleteCertificationByIdService(certificateId);
+    public ResponseEntity<Void> deleteCertificationByIdController(@PathVariable Integer certificateId, @RequestParam Integer candidateId) {
+        this.certificationService.deleteCertificationByIdService(certificateId,candidateId);
 
         return ResponseEntity.noContent().build();
     }
+
+
 }

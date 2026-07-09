@@ -33,7 +33,7 @@ public class SkillEvidence {
     private Integer score;
 
     @Column(name = "created_at", insertable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt =  LocalDateTime.now();;
 
     public SkillEvidence() {}
 

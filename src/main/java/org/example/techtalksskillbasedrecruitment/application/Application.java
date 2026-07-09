@@ -32,10 +32,10 @@ public class Application {
     private CandidateProfile candidate;
 
     @Column(name = "status", length = 50)
-    private String status;
+    private String status = "APPLIED";  // Set default here
 
     @Column(name = "applied_at", insertable = false, updatable = false)
-    private LocalDateTime appliedAt;
+    private LocalDateTime appliedAt = LocalDateTime.now();;
 
     public Application() {}
 

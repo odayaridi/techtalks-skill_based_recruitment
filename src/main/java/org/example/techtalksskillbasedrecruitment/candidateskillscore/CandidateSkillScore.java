@@ -36,7 +36,7 @@ public class CandidateSkillScore {
     private BigDecimal score;
 
     @Column(name = "updated_at", insertable = false, updatable = false)
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt = LocalDateTime.now();;
 
     public CandidateSkillScore() {}
 

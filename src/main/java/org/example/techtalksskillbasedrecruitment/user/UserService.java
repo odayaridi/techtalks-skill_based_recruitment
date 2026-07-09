@@ -7,91 +7,124 @@ import org.example.techtalksskillbasedrecruitment.role.RoleRepository;
 import org.example.techtalksskillbasedrecruitment.user.dto.request.CreateUserRequest;
 import org.example.techtalksskillbasedrecruitment.user.dto.request.UpdateUserRequest;
 import org.example.techtalksskillbasedrecruitment.user.dto.response.UserResponse;
+import org.example.techtalksskillbasedrecruitment.user.mapper.UserMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class UserService {
+
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
+    private final UserMapper userMapper;
+
+
+    public UserService(
+            UserRepository userRepository,
+            RoleRepository roleRepository,
+            UserMapper userMapper
+    ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.userMapper = userMapper;
     }
 
 
+    public UserResponse createUserService(CreateUserRequest userRequest) {
 
-    public UserResponse createUserService(CreateUserRequest userRequest){
-        if (userRepository.existsByEmail(userRequest.getEmail())){
+        if (userRepository.existsByEmail(userRequest.getEmail())) {
             throw new ConflictException("User already exists with this email");
         }
 
-        if(userRepository.existsByUsername(userRequest.getUsername())){
+        if (userRepository.existsByUsername(userRequest.getUsername())) {
             throw new ConflictException("User already exists with this username");
         }
 
-        if(userRepository.existsByPhoneNumber(userRequest.getPhoneNumber())) {
+        if (userRepository.existsByPhoneNumber(userRequest.getPhoneNumber())) {
             throw new ConflictException("User already exists with this phone number");
         }
 
-        Role role = roleRepository.findById(userRequest.getRoleId()).orElseThrow(() ->
-                new ResourceNotFoundException("Role Id not found"));
+
+        Role role = roleRepository.findById(userRequest.getRoleId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Role Id not found")
+                );
+
 
         User user = new User();
+
         user.setUsername(userRequest.getUsername());
         user.setPhoneNumber(userRequest.getPhoneNumber());
         user.setRole(role);
         user.setEmail(userRequest.getEmail());
         user.setPassword(userRequest.getPassword());
 
+
         User savedUser = userRepository.save(user);
-        return new UserResponse(savedUser.getUserId(), savedUser.getUsername(), savedUser.getEmail(),
-                savedUser.getPhoneNumber(), savedUser.getRole().getRoleId(),savedUser.getRole().getRoleName(),savedUser.getCreatedAt());
+
+        return userMapper.toUserResponseDTO(savedUser);
     }
 
+
     public UserResponse updateUserService(UpdateUserRequest userRequest) {
-        if (userRepository.existsByEmailAndUserIdNot(userRequest.getEmail(), userRequest.getUserId())){
+
+
+        if (userRepository.existsByEmailAndUserIdNot(
+                userRequest.getEmail(),
+                userRequest.getUserId()
+        )) {
             throw new ConflictException("User already exists with this email");
         }
 
-        if(userRepository.existsByUsernameAndUserIdNot(userRequest.getUsername(), userRequest.getUserId())){
+
+        if (userRepository.existsByUsernameAndUserIdNot(
+                userRequest.getUsername(),
+                userRequest.getUserId()
+        )) {
             throw new ConflictException("User already exists with this username");
         }
 
-        if(userRepository.existsByPhoneNumberAndUserIdNot(userRequest.getPhoneNumber(), userRequest.getUserId())) {
+
+        if (userRepository.existsByPhoneNumberAndUserIdNot(
+                userRequest.getPhoneNumber(),
+                userRequest.getUserId()
+        )) {
             throw new ConflictException("User already exists with this phone number");
         }
 
-        User existingUser = userRepository.findById(userRequest.getUserId()).orElseThrow(
-                () -> new ResourceNotFoundException("User does not exist with this id")
-        );
+
+        User existingUser = userRepository.findById(userRequest.getUserId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User does not exist with this id"
+                        )
+                );
+
 
         Role role = roleRepository.findById(userRequest.getRoleId())
-                .orElseThrow(() -> new ResourceNotFoundException("Role not found"));
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Role not found")
+                );
+
 
         existingUser.setUsername(userRequest.getUsername());
         existingUser.setEmail(userRequest.getEmail());
         existingUser.setPhoneNumber(userRequest.getPhoneNumber());
         existingUser.setRole(role);
 
+
         User updatedUser = userRepository.save(existingUser);
-        return new UserResponse(updatedUser.getUserId(), updatedUser.getUsername(), updatedUser.getEmail(),
-                updatedUser.getPhoneNumber(), updatedUser.getRole().getRoleId(),updatedUser.getRole().getRoleName(),updatedUser.getCreatedAt());
+
+        return userMapper.toUserResponseDTO(updatedUser);
     }
+
 
     public List<UserResponse> getAllUsersService() {
-        List<User> userList = userRepository.findAll();
-        List<UserResponse> userResponseList = new ArrayList<>();
-        for (User user : userList) {
-            UserResponse userResponse =  new UserResponse(user.getUserId(), user.getUsername(), user.getEmail(),
-                    user.getPhoneNumber(), user.getRole().getRoleId(),user.getRole().getRoleName(),user.getCreatedAt());
-            userResponseList.add(userResponse);
-        }
 
-
-        return userResponseList;
+        return userRepository.findAll()
+                .stream()
+                .map(userMapper::toUserResponseDTO)
+                .toList();
     }
-
 }

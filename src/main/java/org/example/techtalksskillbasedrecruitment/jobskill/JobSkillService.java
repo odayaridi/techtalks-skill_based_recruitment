@@ -1,5 +1,6 @@
 package org.example.techtalksskillbasedrecruitment.jobskill;
 
+import jakarta.transaction.Transactional;
 import org.example.techtalksskillbasedrecruitment.exceptions.ResourceNotFoundException;
 import org.example.techtalksskillbasedrecruitment.job.Job;
 import org.example.techtalksskillbasedrecruitment.job.JobRepository;
@@ -23,6 +24,7 @@ public class JobSkillService {
         this.skillRepository = skillRepository;
     }
 
+    @Transactional
     public List<JobSkillResponse> createJobSkillsService(List<CreateJobSkill> jobSkills){
         List<JobSkillResponse> jobSkillResponses = new ArrayList<>();
         for (CreateJobSkill jobSkill : jobSkills) {
@@ -39,5 +41,16 @@ public class JobSkillService {
             jobSkillResponses.add(new JobSkillResponse(newJobSkill.getJobSkillId(),newJobSkill.getJob().getJobId(),newJobSkill.getSkill().getSkillName(),newJobSkill.getWeight()));
         }
         return jobSkillResponses;
+    }
+
+
+    public void deleteJobSkillService(Integer jobId, String skillName){
+        Job job = this.jobRepository.findById(jobId).orElseThrow(() -> new ResourceNotFoundException("Invalid job id"));
+        Skill skill = this.skillRepository.findBySkillName(skillName);
+        if (skill == null) {
+            throw new ResourceNotFoundException("Invalid Skill name");
+        }
+        JobSkill toDeleteJobSkill = this.jobSkillRepository.findByJobAndSkill(job,skill);
+        this.jobSkillRepository.delete(toDeleteJobSkill);
     }
 }

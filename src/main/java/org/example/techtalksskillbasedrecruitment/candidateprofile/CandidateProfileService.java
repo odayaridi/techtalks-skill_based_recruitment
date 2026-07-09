@@ -4,6 +4,7 @@ package org.example.techtalksskillbasedrecruitment.candidateprofile;
 import org.example.techtalksskillbasedrecruitment.candidateprofile.dto.request.CreateCanProfileRequest;
 import org.example.techtalksskillbasedrecruitment.candidateprofile.dto.request.UpdateProfileRequest;
 import org.example.techtalksskillbasedrecruitment.candidateprofile.dto.response.CandidateProfileResponse;
+import org.example.techtalksskillbasedrecruitment.candidateprofile.mapper.CandidateProfileMapper;
 import org.example.techtalksskillbasedrecruitment.exceptions.ResourceNotFoundException;
 import org.example.techtalksskillbasedrecruitment.user.User;
 import org.example.techtalksskillbasedrecruitment.user.UserRepository;
@@ -16,9 +17,11 @@ import java.util.Map;
 public class CandidateProfileService {
     private final CandidateProfileRepository candidateProfileRepository;
     private final UserRepository userRepository;
-    public CandidateProfileService(CandidateProfileRepository candidateProfileRepository, UserRepository userRepository) {
+    private final CandidateProfileMapper candidateProfileMapper;
+    public CandidateProfileService(CandidateProfileRepository candidateProfileRepository, UserRepository userRepository, CandidateProfileMapper candidateProfileMapper) {
         this.candidateProfileRepository = candidateProfileRepository;
         this.userRepository = userRepository;
+        this.candidateProfileMapper = candidateProfileMapper;
     }
 
     public CandidateProfileResponse createCandidateProfileService(CreateCanProfileRequest profile){
@@ -33,8 +36,7 @@ public class CandidateProfileService {
         candidateProfile.setLinkedinUrl(profile.getLinkedinUrl());
 
         CandidateProfile newProfile = candidateProfileRepository.save(candidateProfile);
-        return new CandidateProfileResponse(newProfile.getCandidateId(),newProfile.getUser().getUserId(),newProfile.getBio()
-                ,newProfile.getLocation(),newProfile.getGithubUrl(),newProfile.getLinkedinUrl());
+        return this.candidateProfileMapper.toDTOResponse(newProfile);
 
     }
 
@@ -53,8 +55,7 @@ public class CandidateProfileService {
         if (candidateProfile == null) {
             throw new ResourceNotFoundException("Candidate profile for this user is not found");
         }
-        return new CandidateProfileResponse(candidateProfile.getCandidateId(),candidateProfile.getUser().getUserId(),candidateProfile.getBio()
-                ,candidateProfile.getLocation(),candidateProfile.getGithubUrl(),candidateProfile.getLinkedinUrl());
+        return this.candidateProfileMapper.toDTOResponse(candidateProfile);
     }
 
    public  CandidateProfileResponse  updateCandidateProfileService(UpdateProfileRequest  updateProfileRequest){
@@ -65,12 +66,9 @@ public class CandidateProfileService {
        candidateProfile.setGithubUrl(updateProfileRequest.getGithubUrl());
        candidateProfile.setLinkedinUrl(updateProfileRequest.getLinkedinUrl());
        CandidateProfile updatedCandidateProfile = this.candidateProfileRepository.save(candidateProfile);
-       return  new CandidateProfileResponse(
-               updatedCandidateProfile.getCandidateId(),
-               updatedCandidateProfile.getUser().getUserId(),
-               updatedCandidateProfile.getBio(),
-               updatedCandidateProfile.getLocation(),
-               updatedCandidateProfile.getGithubUrl(),
-               updatedCandidateProfile.getLinkedinUrl());
+       return this.candidateProfileMapper.toDTOResponse(updatedCandidateProfile);
    }
+
+
+
 }
