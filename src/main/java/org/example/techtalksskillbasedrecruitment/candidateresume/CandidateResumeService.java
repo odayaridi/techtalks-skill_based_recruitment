@@ -7,6 +7,7 @@ import org.example.techtalksskillbasedrecruitment.candidateprofile.CandidateProf
 import org.example.techtalksskillbasedrecruitment.candidateresume.dto.request.CandidateResumeRequest;
 import org.example.techtalksskillbasedrecruitment.candidateresume.dto.request.UpdateCandidateResumeRequest;
 import org.example.techtalksskillbasedrecruitment.candidateresume.dto.response.CandidateResumeResponse;
+import org.example.techtalksskillbasedrecruitment.candidateresume.mapper.CandidateResumeMapper;
 import org.example.techtalksskillbasedrecruitment.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +18,12 @@ import java.util.Map;
 public class CandidateResumeService {
     private final CandidateResumeRepo candidateResumeRepo;
     private final CandidateProfileRepository candidateProfileRepository;
+    private final CandidateResumeMapper candidateResumeMapper;
 
-    public CandidateResumeService(CandidateResumeRepo candidateResumeRepo, CandidateProfileRepository candidateProfileRepository) {
+    public CandidateResumeService(CandidateResumeRepo candidateResumeRepo, CandidateProfileRepository candidateProfileRepository, CandidateResumeMapper candidateResumeMapper) {
         this.candidateResumeRepo = candidateResumeRepo;
         this.candidateProfileRepository = candidateProfileRepository;
+        this.candidateResumeMapper = candidateResumeMapper;
     }
 
     public CandidateResumeResponse createCandidateResumeService(CandidateResumeRequest resumeRequest){
@@ -31,7 +34,7 @@ public class CandidateResumeService {
         candidateResume.setFilePath(resumeRequest.getFilePath());
 
         CandidateResume newCandidateResume = this.candidateResumeRepo.save(candidateResume);
-        return new CandidateResumeResponse(newCandidateResume.getResumeId(),newCandidateResume.getCandidate().getCandidateId(),newCandidateResume.getFilePath());
+        return this.candidateResumeMapper.toCandidateResumeResponseDTO(newCandidateResume);
     }
 
     @Transactional
@@ -46,7 +49,7 @@ public class CandidateResumeService {
         if(candidateResume == null) {
             throw new ResourceNotFoundException("Candidate resume does not exist to retrieve it");
         }
-        return new CandidateResumeResponse(candidateResume.getResumeId(),candidateResume.getCandidate().getCandidateId(),candidateResume.getFilePath());
+        return this.candidateResumeMapper.toCandidateResumeResponseDTO(candidateResume);
     }
     public CandidateResumeResponse updateCandidateResumeService(UpdateCandidateResumeRequest updateRequest) {
         CandidateResume candidateResume = this.candidateResumeRepo.findById(updateRequest.getResumeId())
@@ -56,11 +59,7 @@ public class CandidateResumeService {
 
         CandidateResume updatedResume = this.candidateResumeRepo.save(candidateResume);
 
-        return new CandidateResumeResponse(
-                updatedResume.getResumeId(),
-                updatedResume.getCandidate().getCandidateId(),
-                updatedResume.getFilePath()
-        );
+        return this.candidateResumeMapper.toCandidateResumeResponseDTO(updatedResume);
     }
     public Map<String, Boolean> existsCandidateResumeByCandidateIdService(Integer candidateId) {
         CandidateProfile existingCandidateProfile = this.candidateProfileRepository.findById(candidateId).orElseThrow(() ->
