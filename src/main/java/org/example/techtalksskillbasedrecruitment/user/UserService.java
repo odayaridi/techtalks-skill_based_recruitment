@@ -7,21 +7,23 @@ import org.example.techtalksskillbasedrecruitment.role.RoleRepository;
 import org.example.techtalksskillbasedrecruitment.user.dto.request.CreateUserRequest;
 import org.example.techtalksskillbasedrecruitment.user.dto.request.UpdateUserRequest;
 import org.example.techtalksskillbasedrecruitment.user.dto.response.UserResponse;
+import org.example.techtalksskillbasedrecruitment.user.mapper.UserMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    public UserService(UserRepository userRepository, RoleRepository roleRepository) {
+    private final UserMapper userMapper;
+
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.userMapper = userMapper;
     }
-
-
 
     public UserResponse createUserService(CreateUserRequest userRequest){
         if (userRepository.existsByEmail(userRequest.getEmail())){
@@ -47,8 +49,7 @@ public class UserService {
         user.setPassword(userRequest.getPassword());
 
         User savedUser = userRepository.save(user);
-        return new UserResponse(savedUser.getUserId(), savedUser.getUsername(), savedUser.getEmail(),
-                savedUser.getPhoneNumber(), savedUser.getRole().getRoleId(),savedUser.getRole().getRoleName(),savedUser.getCreatedAt());
+        return userMapper.toUserResponseDTO(savedUser);
     }
 
     public UserResponse updateUserService(UpdateUserRequest userRequest) {
@@ -77,21 +78,15 @@ public class UserService {
         existingUser.setRole(role);
 
         User updatedUser = userRepository.save(existingUser);
-        return new UserResponse(updatedUser.getUserId(), updatedUser.getUsername(), updatedUser.getEmail(),
-                updatedUser.getPhoneNumber(), updatedUser.getRole().getRoleId(),updatedUser.getRole().getRoleName(),updatedUser.getCreatedAt());
+        return userMapper.toUserResponseDTO(updatedUser);
     }
 
     public List<UserResponse> getAllUsersService() {
         List<User> userList = userRepository.findAll();
-        List<UserResponse> userResponseList = new ArrayList<>();
-        for (User user : userList) {
-            UserResponse userResponse =  new UserResponse(user.getUserId(), user.getUsername(), user.getEmail(),
-                    user.getPhoneNumber(), user.getRole().getRoleId(),user.getRole().getRoleName(),user.getCreatedAt());
-            userResponseList.add(userResponse);
-        }
 
-
-        return userResponseList;
+        return userList.stream()
+                .map(userMapper::toUserResponseDTO)
+                .collect(Collectors.toList());
     }
 
 }
