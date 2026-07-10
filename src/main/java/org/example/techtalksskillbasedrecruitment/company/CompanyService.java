@@ -4,9 +4,9 @@ package org.example.techtalksskillbasedrecruitment.company;
 import org.example.techtalksskillbasedrecruitment.company.dto.request.CompanyRequest;
 import org.example.techtalksskillbasedrecruitment.exceptions.ConflictException;
 import org.example.techtalksskillbasedrecruitment.exceptions.ResourceNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class CompanyService {
@@ -48,8 +48,8 @@ public class CompanyService {
         return  this.companyRepository.save(company);
     }
 
-    public List<Company> getAllCompaniesService(){
-        return this.companyRepository.findAll();
+    public Page<Company> getAllCompaniesService(Pageable pageable){
+        return this.companyRepository.findAll(pageable);
     }
 
     public void deleteCompanyService(Integer companyId){
