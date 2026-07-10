@@ -51,7 +51,7 @@ public class SkillService {
 //        return this.skillRepository.findAll();
 //    }
 
-    public Page<Skill> fetchAllSkillsService(Pageable pageable) {
+    public Page<Skill> fetchAllSkillsService(Pageable pageable)  {
         return this.skillRepository.findAll(pageable);
     }
 }
