@@ -1,7 +1,12 @@
 package org.example.techtalksskillbasedrecruitment.company;
 
 
+import org.example.techtalksskillbasedrecruitment.common.response.PaginatedResponse;
+import org.example.techtalksskillbasedrecruitment.common.response.PaginationMeta;
 import org.example.techtalksskillbasedrecruitment.company.dto.request.CompanyRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,9 +36,31 @@ public class CompanyController {
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<Company>> getAllCompaniesController(){
-        List<Company> companiesList = this.companyService.getAllCompaniesService();
-        return ResponseEntity.ok(companiesList);
+    public ResponseEntity<PaginatedResponse<Company>> getAllCompaniesController(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+
+        Pageable pageable = PageRequest.of(page, limit);
+
+        Page<Company> companyPage = this.companyService.getAllCompaniesService(pageable);
+
+        PaginationMeta meta = new PaginationMeta(
+                companyPage.getNumber(),
+                companyPage.getSize(),
+                companyPage.getTotalElements(),
+                companyPage.getTotalPages(),
+                companyPage.isFirst(),
+                companyPage.isLast()
+        );
+
+        PaginatedResponse<Company> response =
+                new PaginatedResponse<>(
+                        companyPage.getContent(),
+                        meta
+                );
+
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/delete/companyId/{companyId}")

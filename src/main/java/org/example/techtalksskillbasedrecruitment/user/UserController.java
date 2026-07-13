@@ -1,9 +1,14 @@
 package org.example.techtalksskillbasedrecruitment.user;
 
 import lombok.Getter;
+import org.example.techtalksskillbasedrecruitment.common.response.PaginatedResponse;
+import org.example.techtalksskillbasedrecruitment.common.response.PaginationMeta;
 import org.example.techtalksskillbasedrecruitment.user.dto.request.CreateUserRequest;
 import org.example.techtalksskillbasedrecruitment.user.dto.request.UpdateUserRequest;
 import org.example.techtalksskillbasedrecruitment.user.dto.response.UserResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,7 +40,30 @@ public class UserController {
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<UserResponse>> getAllUsersController() {
-        return ResponseEntity.ok(userService.getAllUsersService());
+    public ResponseEntity<PaginatedResponse<UserResponse>> getAllUsersController(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+
+        Pageable pageable = PageRequest.of(page, limit);
+
+        Page<UserResponse> userPage = userService.getAllUsersService(pageable);
+
+        PaginationMeta meta = new PaginationMeta(
+                userPage.getNumber(),
+                userPage.getSize(),
+                userPage.getTotalElements(),
+                userPage.getTotalPages(),
+                userPage.isFirst(),
+                userPage.isLast()
+        );
+
+        PaginatedResponse<UserResponse> response =
+                new PaginatedResponse<>(
+                        userPage.getContent(),
+                        meta
+                );
+
+        return ResponseEntity.ok(response);
     }
 }

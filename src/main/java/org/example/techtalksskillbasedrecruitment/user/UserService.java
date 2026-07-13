@@ -8,6 +8,8 @@ import org.example.techtalksskillbasedrecruitment.user.dto.request.CreateUserReq
 import org.example.techtalksskillbasedrecruitment.user.dto.request.UpdateUserRequest;
 import org.example.techtalksskillbasedrecruitment.user.dto.response.UserResponse;
 import org.example.techtalksskillbasedrecruitment.user.mapper.UserMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -120,11 +122,9 @@ public class UserService {
     }
 
 
-    public List<UserResponse> getAllUsersService() {
+    public Page<UserResponse> getAllUsersService(Pageable pageable) {
 
-        return userRepository.findAll()
-                .stream()
-                .map(userMapper::toUserResponseDTO)
-                .toList();
+        return userRepository.findAll(pageable)
+                .map(userMapper::toUserResponseDTO);
     }
 }
