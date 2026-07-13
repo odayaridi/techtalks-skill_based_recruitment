@@ -4,15 +4,19 @@ import org.example.techtalksskillbasedrecruitment.exceptions.ConflictException;
 import org.example.techtalksskillbasedrecruitment.exceptions.ResourceNotFoundException;
 import org.example.techtalksskillbasedrecruitment.role.Role;
 import org.example.techtalksskillbasedrecruitment.role.RoleRepository;
+import org.example.techtalksskillbasedrecruitment.security.jwt.JwtService;
 import org.example.techtalksskillbasedrecruitment.user.dto.request.CreateUserRequest;
+import org.example.techtalksskillbasedrecruitment.user.dto.request.LoginRequest;
 import org.example.techtalksskillbasedrecruitment.user.dto.request.UpdateUserRequest;
+import org.example.techtalksskillbasedrecruitment.user.dto.response.LoginResponse;
 import org.example.techtalksskillbasedrecruitment.user.dto.response.UserResponse;
 import org.example.techtalksskillbasedrecruitment.user.mapper.UserMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserService {
@@ -20,18 +24,62 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
 
     public UserService(
             UserRepository userRepository,
             RoleRepository roleRepository,
-            UserMapper userMapper
+            UserMapper userMapper,
+            PasswordEncoder passwordEncoder,
+            AuthenticationManager authenticationManager,
+            JwtService jwtService
     ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
+
+//    public UserResponse createUserService(CreateUserRequest userRequest) {
+//
+//        if (userRepository.existsByEmail(userRequest.getEmail())) {
+//            throw new ConflictException("User already exists with this email");
+//        }
+//
+//        if (userRepository.existsByUsername(userRequest.getUsername())) {
+//            throw new ConflictException("User already exists with this username");
+//        }
+//
+//        if (userRepository.existsByPhoneNumber(userRequest.getPhoneNumber())) {
+//            throw new ConflictException("User already exists with this phone number");
+//        }
+//
+//
+//        Role role = roleRepository.findById(userRequest.getRoleId())
+//                .orElseThrow(() ->
+//                        new ResourceNotFoundException("Role Id not found")
+//                );
+//
+//
+//        User user = new User();
+//
+//        user.setUsername(userRequest.getUsername());
+//        user.setPhoneNumber(userRequest.getPhoneNumber());
+//        user.setRole(role);
+//        user.setEmail(userRequest.getEmail());
+//        user.setPassword(userRequest.getPassword());
+//
+//
+//        User savedUser = userRepository.save(user);
+//
+//        return userMapper.toUserResponseDTO(savedUser);
+//    }
 
     public UserResponse createUserService(CreateUserRequest userRequest) {
 
@@ -60,7 +108,7 @@ public class UserService {
         user.setPhoneNumber(userRequest.getPhoneNumber());
         user.setRole(role);
         user.setEmail(userRequest.getEmail());
-        user.setPassword(userRequest.getPassword());
+        user.setPassword(passwordEncoder.encode(userRequest.getPassword()));
 
 
         User savedUser = userRepository.save(user);
@@ -126,5 +174,30 @@ public class UserService {
 
         return userRepository.findAll(pageable)
                 .map(userMapper::toUserResponseDTO);
+    }
+
+
+    public LoginResponse loginUserService(LoginRequest loginRequest) {
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        loginRequest.getUsername(),
+                        loginRequest.getPassword()
+                )
+        );
+
+        User user = userRepository.findByUsername(loginRequest.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with this username"));
+
+        String token = jwtService.generateToken(user.getUsername());
+
+        return new LoginResponse(
+                user.getUserId(),
+                user.getUsername(),
+                user.getEmail(),
+                user.getPhoneNumber(),
+                user.getRole().getRoleName(),
+                token
+        );
     }
 }
