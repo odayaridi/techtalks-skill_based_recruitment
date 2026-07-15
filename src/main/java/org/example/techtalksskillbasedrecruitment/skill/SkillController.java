@@ -3,6 +3,8 @@ package org.example.techtalksskillbasedrecruitment.skill;
 
 import org.example.techtalksskillbasedrecruitment.common.response.PaginatedResponse;
 import org.example.techtalksskillbasedrecruitment.common.response.PaginationMeta;
+import org.example.techtalksskillbasedrecruitment.security.annotation.CandidateOnly;
+import org.example.techtalksskillbasedrecruitment.security.annotation.RecruiterOnly;
 import org.example.techtalksskillbasedrecruitment.skill.dto.request.SkillRequest;
 import org.example.techtalksskillbasedrecruitment.skill.dto.response.SkillResponse;
 import org.springframework.data.domain.Page;
@@ -10,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -66,6 +69,7 @@ public class SkillController {
 //    }
 
 //
+
     @GetMapping("/getAll")
     public ResponseEntity<PaginatedResponse<SkillResponse>> getAllSkills(
             @RequestParam(defaultValue = "0") int page,

@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = "*", allowCredentials = "false")
@@ -23,6 +24,7 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
+
 
     @PostMapping("/create")
     public ResponseEntity<UserResponse> createUserController(@RequestBody CreateUserRequest userRequest) {
@@ -38,7 +40,9 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
+
     @GetMapping("/getAll")
+    @PreAuthorize("hasRole('RECRUITER')")
     public ResponseEntity<PaginatedResponse<UserResponse>> getAllUsersController(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit
