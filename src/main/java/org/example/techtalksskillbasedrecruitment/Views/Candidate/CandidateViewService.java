@@ -20,5 +20,8 @@ public class CandidateViewService {
                 .orElseThrow(() -> new ResourceNotFoundException("Candidate is not found"));
     }
 
+    public Page<CandidateView> fetchAllCandidatesService(Pageable pageable) {
+        return this.candidateViewRepository.findAll(pageable);
+    }
 
 }

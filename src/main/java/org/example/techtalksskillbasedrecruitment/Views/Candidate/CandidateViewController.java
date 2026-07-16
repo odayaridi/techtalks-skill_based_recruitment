@@ -28,6 +28,31 @@ public class CandidateViewController {
         return new ResponseEntity<>(candidateView, HttpStatus.OK);
     }
 
+    @GetMapping("/fetchAllCandidates")
+    public ResponseEntity<PaginatedResponse<CandidateView>> fetchAllCandidatesController(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
+        Pageable pageable = PageRequest.of(page, limit);
 
+        Page<CandidateView> candidatePage = this.candidateViewService.fetchAllCandidatesService(pageable);
+
+        PaginationMeta meta = new PaginationMeta(
+                candidatePage.getNumber(),
+                candidatePage.getSize(),
+                candidatePage.getTotalElements(),
+                candidatePage.getTotalPages(),
+                candidatePage.isFirst(),
+                candidatePage.isLast()
+        );
+
+        PaginatedResponse<CandidateView> response =
+                new PaginatedResponse<>(
+                        candidatePage.getContent(),
+                        meta
+                );
+
+        return ResponseEntity.ok(response);
+    }
 
 }
