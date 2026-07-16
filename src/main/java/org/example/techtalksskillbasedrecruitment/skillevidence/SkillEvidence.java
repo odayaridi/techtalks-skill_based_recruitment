@@ -7,7 +7,9 @@ import org.example.techtalksskillbasedrecruitment.skill.Skill;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "skill_evidence")
+@Table(name = "skill_evidence", indexes = {
+        @Index(name = "idx_skill_evidence_candidate_skill", columnList = "candidate_id, skill_id")
+})
 public class SkillEvidence {
 
     @Id

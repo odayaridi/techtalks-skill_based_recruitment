@@ -6,7 +6,10 @@ import org.example.techtalksskillbasedrecruitment.candidateprofile.CandidateProf
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "certifications")
+@Table(name = "certifications", indexes = {
+        @Index(name = "idx_certifications_candidate_id", columnList = "candidate_id"),
+        @Index(name = "idx_certifications_certificate_file", columnList = "certificate_file")
+})
 public class Certification {
 
     @Id
