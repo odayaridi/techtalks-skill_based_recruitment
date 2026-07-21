@@ -4,6 +4,7 @@ import org.example.techtalksskillbasedrecruitment.job.dto.request.CreateJobReque
 import org.example.techtalksskillbasedrecruitment.job.dto.request.UpdateJobRequest;
 import org.example.techtalksskillbasedrecruitment.job.dto.response.JobResponse;
 import org.example.techtalksskillbasedrecruitment.matchscore.dto.response.MatchScoreResponse;
+import org.example.techtalksskillbasedrecruitment.security.annotation.RecruiterOnly;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class JobController {
     public JobController(JobService jobService) {
         this.jobService = jobService;
     }
-
+    @RecruiterOnly
     @PostMapping("/postJob")
     public ResponseEntity<JobResponse> postJobController(@RequestBody CreateJobRequest jobRequest) {
         JobResponse newJob = this.jobService.postJobService(jobRequest);
@@ -36,7 +37,7 @@ public class JobController {
         return ResponseEntity.ok(jobs);
     }
 
-
+    @RecruiterOnly
     @PutMapping("/updateJobDetails")
     public ResponseEntity<JobResponse> updateJobDetailsController(
             @RequestParam Integer jobId,
@@ -45,13 +46,13 @@ public class JobController {
         JobResponse updatedJob = this.jobService.updateJobDetailsService(jobId,jobRequest);
         return new ResponseEntity<>(updatedJob, HttpStatus.OK);
     }
-
+    @RecruiterOnly
     @DeleteMapping("/delete/jobId/{jobId}")
     public ResponseEntity<Void> deleteJobController(@PathVariable Integer jobId){
         this.jobService.deleteJobService(jobId);
         return ResponseEntity.noContent().build();
     }
-
+    @RecruiterOnly
     @GetMapping("/fetchRecruiterJobs")
     public ResponseEntity<List<JobResponse>> getPostedJobsByRecruiterController(
             @RequestParam Integer recruiterId) {
@@ -60,7 +61,7 @@ public class JobController {
         return ResponseEntity.ok(jobs);
     }
 
-
+    @RecruiterOnly
     @PostMapping("/calculateMatchScore")
     public ResponseEntity<List<MatchScoreResponse>> calculateMatchScoresController(@RequestParam Integer jobId){
         List<MatchScoreResponse> matchScoreResponseList = this.jobService.calculateMatchScoresService(jobId);

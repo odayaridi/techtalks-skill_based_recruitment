@@ -4,6 +4,7 @@ package org.example.techtalksskillbasedrecruitment.company;
 import org.example.techtalksskillbasedrecruitment.common.response.PaginatedResponse;
 import org.example.techtalksskillbasedrecruitment.common.response.PaginationMeta;
 import org.example.techtalksskillbasedrecruitment.company.dto.request.CompanyRequest;
+import org.example.techtalksskillbasedrecruitment.security.annotation.RecruiterOnly;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,13 +23,13 @@ public class CompanyController {
     public CompanyController(CompanyService companyService) {
         this.companyService = companyService;
     }
-
+    @RecruiterOnly
     @PostMapping("/create")
     public ResponseEntity<Company> createCompanyController(@RequestBody CompanyRequest companyRequest){
         Company newCompany = this.companyService.createCompanyService(companyRequest);
         return new ResponseEntity<>(newCompany, HttpStatus.CREATED);
     }
-
+    @RecruiterOnly
     @PutMapping("/update")
     public ResponseEntity<Company> updateCompanyController(@RequestParam Integer companyId, @RequestBody CompanyRequest companyRequest) {
          Company updatedCompany = this.companyService.updateCompanyService(companyId,companyRequest);
@@ -62,7 +63,7 @@ public class CompanyController {
 
         return ResponseEntity.ok(response);
     }
-
+    @RecruiterOnly
     @DeleteMapping("/delete/companyId/{companyId}")
     public ResponseEntity<Void> deleteCompanyController(@PathVariable Integer companyId){
         this.companyService.deleteCompanyService(companyId);

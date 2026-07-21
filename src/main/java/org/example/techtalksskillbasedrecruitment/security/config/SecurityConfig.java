@@ -1,5 +1,5 @@
 package org.example.techtalksskillbasedrecruitment.security.config;
-
+import org.example.techtalksskillbasedrecruitment.ratelimit.RateLimitFilter;
 import org.example.techtalksskillbasedrecruitment.security.jwt.JwtAuthenticationEntryPoint;
 import org.example.techtalksskillbasedrecruitment.security.jwt.JwtAuthenticationFilter;
 import org.example.techtalksskillbasedrecruitment.security.service.CustomUserDetailsService;
@@ -26,15 +26,20 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CustomUserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
+    private final RateLimitFilter rateLimitFilter;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
-                          JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-                          CustomUserDetailsService userDetailsService,
-                          PasswordEncoder passwordEncoder) {
+    public SecurityConfig(
+            JwtAuthenticationFilter jwtAuthenticationFilter,
+            JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+            CustomUserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder,
+            RateLimitFilter rateLimitFilter
+    ) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.userDetailsService = userDetailsService;
         this.passwordEncoder = passwordEncoder;
+        this.rateLimitFilter = rateLimitFilter;
     }
 
     @Bean
@@ -61,7 +66,8 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(rateLimitFilter, JwtAuthenticationFilter.class);
         return http.build();
     }
 }

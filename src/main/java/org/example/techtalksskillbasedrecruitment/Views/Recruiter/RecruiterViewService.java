@@ -17,5 +17,7 @@ public class RecruiterViewService {
     }
 
 
-
+    public Page<RecruiterView> fetchAllRecruitersService(Pageable pageable) {
+        return recruiterViewRepository.findAll(pageable);
+    }
 }

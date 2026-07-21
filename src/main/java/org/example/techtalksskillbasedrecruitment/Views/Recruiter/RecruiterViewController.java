@@ -22,5 +22,32 @@ public class RecruiterViewController {
         return recruiterViewService.getRecruiterByUserIdService(id);
     }
 
+    @GetMapping("/fetchAllRecruiters")
+    public ResponseEntity<PaginatedResponse<RecruiterView>> fetchAllRecruitersController(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit
+    ) {
 
+        Pageable pageable = PageRequest.of(page, limit);
+
+        Page<RecruiterView> recruiterPage =
+                recruiterViewService.fetchAllRecruitersService(pageable);
+
+        PaginationMeta meta = new PaginationMeta(
+                recruiterPage.getNumber(),
+                recruiterPage.getSize(),
+                recruiterPage.getTotalElements(),
+                recruiterPage.getTotalPages(),
+                recruiterPage.isFirst(),
+                recruiterPage.isLast()
+        );
+
+        PaginatedResponse<RecruiterView> response =
+                new PaginatedResponse<>(
+                        recruiterPage.getContent(),
+                        meta
+                );
+
+        return ResponseEntity.ok(response);
+    }
 }
