@@ -1,3 +1,33 @@
+//package org.example.techtalksskillbasedrecruitment.security.jwt;
+//
+//import org.springframework.boot.context.properties.ConfigurationProperties;
+//import org.springframework.stereotype.Component;
+//
+//@Component
+//@ConfigurationProperties(prefix = "jwt")
+//public class JwtProperties {
+//
+//    private String secret;
+//    private long expirationMs;
+//
+//    public String getSecret() {
+//        return secret;
+//    }
+//
+//    public void setSecret(String secret) {
+//        this.secret = secret;
+//    }
+//
+//    public long getExpirationMs() {
+//        return expirationMs;
+//    }
+//
+//    public void setExpirationMs(long expirationMs) {
+//        this.expirationMs = expirationMs;
+//    }
+//}
+
+
 package org.example.techtalksskillbasedrecruitment.security.jwt;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -8,7 +38,8 @@ import org.springframework.stereotype.Component;
 public class JwtProperties {
 
     private String secret;
-    private long expirationMs;
+    private long accessTokenExpirationMs;
+    private long refreshTokenExpirationMs;
 
     public String getSecret() {
         return secret;
@@ -18,11 +49,19 @@ public class JwtProperties {
         this.secret = secret;
     }
 
-    public long getExpirationMs() {
-        return expirationMs;
+    public long getAccessTokenExpirationMs() {
+        return accessTokenExpirationMs;
     }
 
-    public void setExpirationMs(long expirationMs) {
-        this.expirationMs = expirationMs;
+    public void setAccessTokenExpirationMs(long accessTokenExpirationMs) {
+        this.accessTokenExpirationMs = accessTokenExpirationMs;
+    }
+
+    public long getRefreshTokenExpirationMs() {
+        return refreshTokenExpirationMs;
+    }
+
+    public void setRefreshTokenExpirationMs(long refreshTokenExpirationMs) {
+        this.refreshTokenExpirationMs = refreshTokenExpirationMs;
     }
 }

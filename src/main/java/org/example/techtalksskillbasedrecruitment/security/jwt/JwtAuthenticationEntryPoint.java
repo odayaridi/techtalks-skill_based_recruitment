@@ -3,7 +3,7 @@ package org.example.techtalksskillbasedrecruitment.security.jwt;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.example.techtalksskillbasedrecruitment.exceptions.ErrorResponse;
+import org.example.techtalksskillbasedrecruitment.common.exceptions.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;

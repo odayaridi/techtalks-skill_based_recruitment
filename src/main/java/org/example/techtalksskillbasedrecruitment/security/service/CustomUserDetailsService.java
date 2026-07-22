@@ -1,7 +1,7 @@
 package org.example.techtalksskillbasedrecruitment.security.service;
 
-import org.example.techtalksskillbasedrecruitment.user.User;
-import org.example.techtalksskillbasedrecruitment.user.UserRepository;
+import org.example.techtalksskillbasedrecruitment.modules.user.User;
+import org.example.techtalksskillbasedrecruitment.modules.user.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
