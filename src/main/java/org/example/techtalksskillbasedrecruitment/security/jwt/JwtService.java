@@ -89,6 +89,7 @@ public class JwtService {
     private static final String TOKEN_TYPE_CLAIM = "type";
     private static final String ACCESS_TOKEN_TYPE = "ACCESS";
     private static final String REFRESH_TOKEN_TYPE = "REFRESH";
+    private static final String PASSWORD_RESET_TOKEN_TYPE = "PASSWORD_RESET";
 
     private final JwtProperties jwtProperties;
 
@@ -106,6 +107,10 @@ public class JwtService {
 
     public String generateRefreshToken(String username) {
         return generateToken(username, jwtProperties.getRefreshTokenExpirationMs(), REFRESH_TOKEN_TYPE);
+    }
+
+    public String generatePasswordResetToken(String username) {
+        return generateToken(username, jwtProperties.getPasswordResetTokenExpirationMs(), PASSWORD_RESET_TOKEN_TYPE);
     }
 
     private String generateToken(String username, long expirationMs, String type) {
@@ -173,5 +178,18 @@ public class JwtService {
     public boolean validateRefreshToken(String token, String username) {
         String tokenUsername = extractUsername(token);
         return tokenUsername.equals(username) && !isTokenExpired(token) && isRefreshToken(token);
+    }
+
+    public boolean isPasswordResetToken(String token) {
+        try {
+            return PASSWORD_RESET_TOKEN_TYPE.equals(extractTokenType(token));
+        } catch (JwtException | IllegalArgumentException ex) {
+            return false;
+        }
+    }
+
+    public boolean validatePasswordResetToken(String token, String username) {
+        String tokenUsername = extractUsername(token);
+        return tokenUsername.equals(username) && !isTokenExpired(token) && isPasswordResetToken(token);
     }
 }

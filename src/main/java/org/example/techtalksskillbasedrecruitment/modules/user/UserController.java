@@ -82,12 +82,15 @@
 
 package org.example.techtalksskillbasedrecruitment.modules.user;
 
+import jakarta.validation.Valid;
 import org.example.techtalksskillbasedrecruitment.common.pagination.PaginatedResponse;
 import org.example.techtalksskillbasedrecruitment.common.pagination.PaginationMeta;
 import org.example.techtalksskillbasedrecruitment.ratelimit.RateLimit;
 import org.example.techtalksskillbasedrecruitment.modules.user.dto.request.CreateUserRequest;
+import org.example.techtalksskillbasedrecruitment.modules.user.dto.request.ForgotPasswordRequest;
 import org.example.techtalksskillbasedrecruitment.modules.user.dto.request.LoginRequest;
 import org.example.techtalksskillbasedrecruitment.modules.user.dto.request.RefreshTokenRequest;
+import org.example.techtalksskillbasedrecruitment.modules.user.dto.request.ResetPasswordRequest;
 import org.example.techtalksskillbasedrecruitment.modules.user.dto.request.UpdateUserRequest;
 import org.example.techtalksskillbasedrecruitment.modules.user.dto.response.LoginResponse;
 import org.example.techtalksskillbasedrecruitment.modules.user.dto.response.UserResponse;
@@ -98,6 +101,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @CrossOrigin(origins = "*", allowCredentials = "false")
 @RestController
@@ -164,5 +169,20 @@ public class UserController {
     public ResponseEntity<LoginResponse> refreshTokenController(@RequestBody RefreshTokenRequest refreshTokenRequest) {
         LoginResponse loginResponse = userService.refreshTokenService(refreshTokenRequest);
         return ResponseEntity.ok(loginResponse);
+    }
+
+    @PostMapping("/forgot-password")
+    @RateLimit(requests = 3, windowSeconds = 300)
+    public ResponseEntity<Map<String, String>> forgotPasswordController(
+            @Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest) {
+        Map<String, String> response = userService.forgotPasswordService(forgotPasswordRequest);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Map<String, String>> resetPasswordController(
+            @Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
+        Map<String, String> response = userService.resetPasswordService(resetPasswordRequest);
+        return ResponseEntity.ok(response);
     }
 }

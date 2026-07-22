@@ -205,6 +205,10 @@
 
 package org.example.techtalksskillbasedrecruitment.modules.user;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import org.example.techtalksskillbasedrecruitment.common.email.EmailService;
+import org.example.techtalksskillbasedrecruitment.common.exceptions.BadRequestException;
 import org.example.techtalksskillbasedrecruitment.common.exceptions.ConflictException;
 import org.example.techtalksskillbasedrecruitment.common.exceptions.ResourceNotFoundException;
 import org.example.techtalksskillbasedrecruitment.common.exceptions.UnauthorizedException;
@@ -212,12 +216,15 @@ import org.example.techtalksskillbasedrecruitment.modules.role.Role;
 import org.example.techtalksskillbasedrecruitment.modules.role.RoleRepository;
 import org.example.techtalksskillbasedrecruitment.security.jwt.JwtService;
 import org.example.techtalksskillbasedrecruitment.modules.user.dto.request.CreateUserRequest;
+import org.example.techtalksskillbasedrecruitment.modules.user.dto.request.ForgotPasswordRequest;
 import org.example.techtalksskillbasedrecruitment.modules.user.dto.request.LoginRequest;
 import org.example.techtalksskillbasedrecruitment.modules.user.dto.request.RefreshTokenRequest;
+import org.example.techtalksskillbasedrecruitment.modules.user.dto.request.ResetPasswordRequest;
 import org.example.techtalksskillbasedrecruitment.modules.user.dto.request.UpdateUserRequest;
 import org.example.techtalksskillbasedrecruitment.modules.user.dto.response.LoginResponse;
 import org.example.techtalksskillbasedrecruitment.modules.user.dto.response.UserResponse;
 import org.example.techtalksskillbasedrecruitment.modules.user.mapper.UserMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -225,8 +232,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class UserService {
+
+    private static final String FORGOT_PASSWORD_GENERIC_MESSAGE =
+            "If an account exists with this email, a password reset link has been sent.";
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -234,6 +246,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final EmailService emailService;
+    private final String resetPasswordUrl;
 
 
     public UserService(
@@ -242,7 +256,9 @@ public class UserService {
             UserMapper userMapper,
             PasswordEncoder passwordEncoder,
             AuthenticationManager authenticationManager,
-            JwtService jwtService
+            JwtService jwtService,
+            EmailService emailService,
+            @Value("${app.frontend.reset-password-url}") String resetPasswordUrl
     ) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -250,6 +266,8 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.emailService = emailService;
+        this.resetPasswordUrl = resetPasswordUrl;
     }
 
 
@@ -409,5 +427,57 @@ public class UserService {
                 newAccessToken,
                 refreshToken
         );
+    }
+
+
+    public Map<String, String> forgotPasswordService(ForgotPasswordRequest request) {
+
+        userRepository.findByEmail(request.getEmail()).ifPresent(user -> {
+            String resetToken = jwtService.generatePasswordResetToken(user.getUsername());
+            String resetLink = resetPasswordUrl + "?token=" + resetToken;
+            System.out.println("TEMP DEBUG - remove before done - reset link: " + resetLink); // TODO remove
+            emailService.sendPasswordResetEmail(user.getEmail(), resetLink);
+        });
+
+        return Map.of("message", FORGOT_PASSWORD_GENERIC_MESSAGE);
+    }
+
+
+    public Map<String, String> resetPasswordService(ResetPasswordRequest request) {
+
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new BadRequestException("New password and confirmation password do not match.");
+        }
+
+        String token = request.getToken();
+        User user;
+
+        try {
+            if (jwtService.isTokenExpired(token)) {
+                throw new UnauthorizedException("Password reset token has expired. Request a new reset link.");
+            }
+
+            if (!jwtService.isPasswordResetToken(token)) {
+                throw new UnauthorizedException("Provided token is not a valid password reset token.");
+            }
+
+            String username = jwtService.extractUsername(token);
+
+            user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found with this username"));
+
+            if (!jwtService.validatePasswordResetToken(token, user.getUsername())) {
+                throw new UnauthorizedException("Password reset token is invalid.");
+            }
+        } catch (ExpiredJwtException ex) {
+            throw new UnauthorizedException("Password reset token has expired. Request a new reset link.");
+        } catch (JwtException | IllegalArgumentException ex) {
+            throw new UnauthorizedException("Password reset token is invalid.");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
+
+        return Map.of("message", "Password reset successfully.");
     }
 }

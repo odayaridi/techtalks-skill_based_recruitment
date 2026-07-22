@@ -162,11 +162,6 @@ public class RateLimitFilter extends OncePerRequestFilter {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || !authentication.isAuthenticated()) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         // Default rate limit for all endpoints
         int maxRequests = DEFAULT_MAX_REQUESTS;
         int windowSeconds = DEFAULT_WINDOW_SECONDS;
@@ -178,9 +173,15 @@ public class RateLimitFilter extends OncePerRequestFilter {
             windowSeconds = rateLimit.windowSeconds();
         }
 
-        String userIdentifier = authentication.getName();
+        // Authenticated requests are keyed by username; unauthenticated (public)
+        // requests fall back to the client IP so public endpoints like
+        // forgot-password can still be rate limited.
+        String identifier = (authentication != null && authentication.isAuthenticated())
+                ? authentication.getName()
+                : resolveClientIp(request);
+
         String endpoint = request.getRequestURI();
-        String key = userIdentifier + ":" + endpoint;
+        String key = identifier + ":" + endpoint;
 
         boolean allowed = slidingWindowRateLimiter.isAllowed(
                 key,
@@ -194,6 +195,14 @@ public class RateLimitFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    private String resolveClientIp(HttpServletRequest request) {
+        String forwardedFor = request.getHeader("X-Forwarded-For");
+        if (forwardedFor != null && !forwardedFor.isBlank()) {
+            return forwardedFor.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 
     private HandlerMethod resolveHandlerMethod(HttpServletRequest request) {

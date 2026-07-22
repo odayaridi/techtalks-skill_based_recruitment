@@ -40,6 +40,7 @@ public class JwtProperties {
     private String secret;
     private long accessTokenExpirationMs;
     private long refreshTokenExpirationMs;
+    private long passwordResetTokenExpirationMs;
 
     public String getSecret() {
         return secret;
@@ -63,5 +64,13 @@ public class JwtProperties {
 
     public void setRefreshTokenExpirationMs(long refreshTokenExpirationMs) {
         this.refreshTokenExpirationMs = refreshTokenExpirationMs;
+    }
+
+    public long getPasswordResetTokenExpirationMs() {
+        return passwordResetTokenExpirationMs;
+    }
+
+    public void setPasswordResetTokenExpirationMs(long passwordResetTokenExpirationMs) {
+        this.passwordResetTokenExpirationMs = passwordResetTokenExpirationMs;
     }
 }
