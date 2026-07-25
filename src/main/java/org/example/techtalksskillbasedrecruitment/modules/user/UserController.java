@@ -116,6 +116,7 @@ public class UserController {
         return new ResponseEntity<UserResponse>(newUser, HttpStatus.CREATED);
     }
 
+    @RateLimit(requests = 6, windowSeconds = 60)
     @PutMapping("/update")
     public ResponseEntity<UserResponse> updateUserController(
             @RequestBody UpdateUserRequest userRequest) {

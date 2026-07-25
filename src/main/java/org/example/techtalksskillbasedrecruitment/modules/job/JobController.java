@@ -4,6 +4,7 @@ import org.example.techtalksskillbasedrecruitment.modules.job.dto.request.Create
 import org.example.techtalksskillbasedrecruitment.modules.job.dto.request.UpdateJobRequest;
 import org.example.techtalksskillbasedrecruitment.modules.job.dto.response.JobResponse;
 import org.example.techtalksskillbasedrecruitment.modules.matchscore.dto.response.MatchScoreResponse;
+import org.example.techtalksskillbasedrecruitment.ratelimit.RateLimit;
 import org.example.techtalksskillbasedrecruitment.security.authorization.annotation.CandidateOnly;
 import org.example.techtalksskillbasedrecruitment.security.authorization.annotation.RecruiterOnly;
 import org.springframework.http.HttpStatus;
@@ -40,7 +41,7 @@ public class JobController {
         return ResponseEntity.ok(jobs);
     }
 
-
+    @RateLimit(requests = 3, windowSeconds = 60)
     @PutMapping("/updateJobDetails")
     @RecruiterOnly
     public ResponseEntity<JobResponse> updateJobDetailsController(
@@ -67,11 +68,12 @@ public class JobController {
         return ResponseEntity.ok(jobs);
     }
 
-
+    @RateLimit(requests = 3, windowSeconds = 60)
     @PostMapping("/calculateMatchScore")
     @RecruiterOnly
     public ResponseEntity<List<MatchScoreResponse>> calculateMatchScoresController(@RequestParam Integer jobId){
         List<MatchScoreResponse> matchScoreResponseList = this.jobService.calculateMatchScoresService(jobId);
         return new ResponseEntity<>(matchScoreResponseList,HttpStatus.CREATED);
     }
+
 }
