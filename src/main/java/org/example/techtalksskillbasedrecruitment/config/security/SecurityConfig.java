@@ -128,7 +128,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/create", "/api/users/login", "/api/users/refresh").permitAll()
+                        .requestMatchers("/api/users/create", "/api/users/login", "/api/users/refresh", "/api/users/forgot-password", "/api/users/reset-password").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(jwtAuthenticationEntryPoint))
