@@ -3,7 +3,7 @@
 
 ## About the Project
 
-The **Skill-Based Recruitment and Internship Platform** is a full-stack web application designed to modernize recruitment by evaluating candidates based on their **demonstrated technical skills** rather than relying solely on resumes or years of experience.
+The **Skill-Based Recruitment and Internship Platform** is a backend application designed to modernize recruitment by evaluating candidates based on their **demonstrated technical skills** rather than relying solely on resumes or years of experience.
 
 Candidates create professional profiles showcasing their technical skills, projects, GitHub repositories, certifications, and resumes. Recruiters create job postings with weighted required skills, and the platform uses an **AI-assisted evidence analysis engine** to evaluate candidate evidence and automatically calculate an objective compatibility score between candidates and job requirements.
 
@@ -279,6 +279,12 @@ https://app.notion.com/p/Sprint-5-Report-3a8961e002c7806fb381c63b47b6a979?source
 ## Sprint 6
 
 https://app.notion.com/p/Sprint-6-Report-3ac961e002c7807880ffccb55a2c58ee?source=copy_link
+
+---
+
+## Internship Learnings
+
+https://app.notion.com/p/TECHTALKS-INTERNSHIP-3ac3cdb345f1800db282cdab75f555e0
 
 ---
 
