@@ -181,7 +181,6 @@ The backend follows a **Feature-Based (Modular) Architecture**, where every busi
 
 | Layer | Technology |
 |---------|------------|
-| Frontend | React |
 | Backend | Spring Boot (REST API) |
 | Database | MariaDB |
 | ORM | Spring Data JPA & Hibernate |
